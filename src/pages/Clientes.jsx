@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Plus, Edit2, Trash2, Phone, Mail, MapPin, CreditCard } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Plus, Edit2, Trash2, Phone, Mail, MapPin, CreditCard, Users } from 'lucide-react';
 import Paginacion from '../components/admin/Paginacion';
 import ModalEliminar from '../components/admin/ModalEliminar';
 import ModalFormulario from '../components/admin/ModalFormulario';
@@ -69,6 +69,9 @@ export default function Clientes() {
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <div className="flex items-center gap-5">
+                    <div className="bg-negro p-3 rounded-lg text-white shadow-md">
+                        <Users size={32} />
+                    </div>
                     <div>
                         <h1 className="text-2xl md:text-3xl font-serif font-bold text-negro">Directorio de Clientes</h1>
                         <p className="text-gray-500 mt-1 text-sm md:text-base">Gestión de facturación y toma de medidas.</p>
@@ -98,7 +101,7 @@ export default function Clientes() {
                                 <th className="p-5 font-semibold w-[35%]">Cliente</th>
                                 <th className="p-5 font-semibold w-[20%]">Identificación</th>
                                 <th className="p-5 font-semibold w-[25%]">Contacto</th>
-                                <th className="p-5 font-semibold text-right w-[20%]">Acciones</th>
+                                <th className="p-5 font-semibold text-center w-[20%]">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 text-gray-700">
@@ -123,7 +126,7 @@ export default function Clientes() {
                                             </div>
                                         </td>
                                         <td className="p-5">
-                                            <div className="flex items-center justify-end gap-3">
+                                            <div className="flex items-center justify-center gap-3">
                                                 <button onClick={() => handleOpenForm(cliente)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Editar">
                                                     <Edit2 size={18} />
                                                 </button>

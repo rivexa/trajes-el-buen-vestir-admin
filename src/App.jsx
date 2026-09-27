@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Users, Receipt, FileText, Menu, X } from 'lucide-react';
 import Clientes from './pages/Clientes';
+import Ordenes from './pages/Ordenes';
 
 // Componente de la barra lateral responsiva
 function Sidebar({ isOpen, setIsOpen }) {
@@ -76,7 +77,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<div className="p-6 md:p-10 text-2xl font-bold text-gray-800">Bienvenido al Panel de Control</div>} />
               <Route path="/clientes" element={<Clientes />} />
-              <Route path="/ordenes" element={<div className="p-6 md:p-10">Módulo de Órdenes en construcción...</div>} />
+              <Route path="/ordenes" element={<Ordenes />} />
               <Route path="/caja" element={<div className="p-6 md:p-10">Módulo de Caja Rápida en construcción...</div>} />
             </Routes>
           </div>
