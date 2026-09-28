@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, X } from 'lucide-react';
 
-const API_URL = 'https://trajes-el-buen-vestir-api.onrender.com/clientes';
+const API_URL = `${import.meta.env.VITE_API_URL}/clientes`;
 
 export default function ModalFormulario({ isOpen, onClose, onSubmitSuccess, clienteEdicion }) {
     const [formData, setFormData] = useState({ nombres: '', apellidos: '', cedula_ruc: '', telefono: '', correo: '', direccion: '' });

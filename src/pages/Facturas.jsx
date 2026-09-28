@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Receipt, Search, FileText, Download } from 'lucide-react';
+import { Receipt, Search, FileText, Download, Plus } from 'lucide-react'; // <-- Se añadió Plus
 import Paginacion from '../components/admin/Paginacion';
+import ModalNuevaFactura from '../components/admin/ModalNuevaFactura';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-const API_URL = `${import.meta.env.VITE_API_URL}/facturas`;
+const API_URL = `${import.meta.env.VITE_API_URL}/facturacion`;
 
 export default function Facturas() {
     const [facturas, setFacturas] = useState([]);
@@ -13,6 +14,8 @@ export default function Facturas() {
     const [totalPages, setTotalPages] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const limit = 10;
+
+    const [isFacturaOpen, setIsFacturaOpen] = useState(false);
 
     const fetchFacturas = async () => {
         setLoading(true);
@@ -46,6 +49,12 @@ export default function Facturas() {
                         <p className="text-gray-500 mt-1 text-sm md:text-base">Historial de facturas emitidas y gestión contable.</p>
                     </div>
                 </div>
+                <button
+                    onClick={() => setIsFacturaOpen(true)}
+                    className="w-full md:w-auto bg-rojoMarca hover:bg-red-800 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors shadow-md"
+                >
+                    <Plus size={20} /> Nueva Factura
+                </button>
             </div>
 
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex items-center gap-3">
@@ -84,12 +93,12 @@ export default function Facturas() {
                                         <div className="text-xs text-gray-500">{fac.clientes?.cedula_ruc}</div>
                                     </td>
                                     <td className="p-5 text-center font-medium text-gray-600">
-                                        ORD-{fac.ordenes_pedido?.numero_orden?.toString().padStart(4, '0')}
+                                        {fac.ordenes_pedido?.numero_orden ? `ORD-${fac.ordenes_pedido.numero_orden.toString().padStart(4, '0')}` : '-'}
                                     </td>
                                     <td className="p-5 text-center">
                                         <div className="flex flex-col gap-1 mx-auto w-32 text-xs">
                                             <span className="flex justify-between w-full"><span className="text-gray-500">Subtotal:</span> <span>${fac.subtotal}</span></span>
-                                            <span className="flex justify-between w-full"><span className="text-gray-500">IVA (15%):</span> <span>${fac.iva}</span></span>
+                                            <span className="flex justify-between w-full"><span className="text-gray-500">IVA (0%):</span> <span>${fac.iva}</span></span>
                                         </div>
                                     </td>
                                     <td className="p-5 text-center font-bold text-rojoMarca text-base">
@@ -109,6 +118,12 @@ export default function Facturas() {
                 </div>
                 {!loading && <Paginacion currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
             </div>
+
+            <ModalNuevaFactura
+                isOpen={isFacturaOpen}
+                onClose={() => setIsFacturaOpen(false)}
+                onSuccess={fetchFacturas}
+            />
         </div>
     );
 }

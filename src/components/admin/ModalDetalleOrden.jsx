@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Package, User, Calendar, CreditCard, FileText, CheckCircle, Clock } from 'lucide-react';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/ordenes`;

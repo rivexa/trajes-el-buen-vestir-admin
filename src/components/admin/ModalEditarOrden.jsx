@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Search, Plus, Trash2, UserCheck, PackageOpen, DollarSign, AlertTriangle, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Plus, Trash2, UserCheck, PackageOpen, DollarSign, Image as ImageIcon, Loader2 } from 'lucide-react';
 
 const API_ORDENES = `${import.meta.env.VITE_API_URL}/ordenes`;
 
