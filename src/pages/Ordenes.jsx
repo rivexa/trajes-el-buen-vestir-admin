@@ -235,10 +235,10 @@ export default function Ordenes() {
                     </div>
                 </div>
                 <button
-                    onClick={() => setIsNuevaOrdenOpen(true)} // <-- Botón Conectado
+                    onClick={() => setIsNuevaOrdenOpen(true)}
                     className="w-full md:w-auto bg-rojoMarca hover:bg-red-800 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors shadow-md"
                 >
-                    <Plus size={20} /> Crear Orden
+                    <Plus size={20} /> Nueva Orden
                 </button>
             </div>
 
