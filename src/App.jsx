@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import { Users, Receipt, FileText, Menu, X } from 'lucide-react';
 import Clientes from './pages/Clientes';
 import Ordenes from './pages/Ordenes';
+import Facturas from './pages/Facturas';
 
 // Componente de la barra lateral responsiva
 function Sidebar({ isOpen, setIsOpen }) {
@@ -43,8 +44,8 @@ function Sidebar({ isOpen, setIsOpen }) {
           <Link to="/ordenes" className={linkClass('/ordenes')} onClick={closeMenu}>
             <FileText size={20} /> Órdenes
           </Link>
-          <Link to="/caja" className={linkClass('/caja')} onClick={closeMenu}>
-            <Receipt size={20} /> Caja Rápida
+          <Link to="/facturas" className={linkClass('/facturas')} onClick={closeMenu}>
+            <Receipt size={20} /> Facturación
           </Link>
         </nav>
       </aside>
@@ -78,7 +79,7 @@ export default function App() {
               <Route path="/" element={<div className="p-6 md:p-10 text-2xl font-bold text-gray-800">Bienvenido al Panel de Control</div>} />
               <Route path="/clientes" element={<Clientes />} />
               <Route path="/ordenes" element={<Ordenes />} />
-              <Route path="/caja" element={<div className="p-6 md:p-10">Módulo de Caja Rápida en construcción...</div>} />
+              <Route path="/facturas" element={<Facturas />} />
             </Routes>
           </div>
         </main>
