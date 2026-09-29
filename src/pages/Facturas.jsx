@@ -182,10 +182,22 @@ export default function Facturas() {
                                     </td>
                                     <td className="p-5 text-center">
                                         <div className="flex justify-center">
-                                            {fac.estado_sri === 'AUTORIZADO' ? <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1.5 rounded-lg">Autorizado</span>
-                                                : fac.estado_sri === 'ANULADA' ? <span className="text-xs font-bold text-gray-700 bg-gray-200 px-3 py-1.5 rounded-lg">Anulada</span>
-                                                    : fac.estado_sri === 'PROCESANDO' ? <span className="text-xs font-bold text-yellow-700 bg-yellow-100 px-3 py-1.5 rounded-lg">Procesando</span>
-                                                        : <span className="text-xs font-bold text-red-700 bg-red-100 px-3 py-1.5 rounded-lg flex items-center gap-1"><AlertCircle size={14} /> Error</span>}
+                                            {fac.estado_sri === 'AUTORIZADO' ? (
+                                                <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1.5 rounded-lg">Autorizado</span>
+                                            ) : fac.estado_sri === 'ANULADA' ? (
+                                                <span className="text-xs font-bold text-gray-700 bg-gray-200 px-3 py-1.5 rounded-lg">Anulada</span>
+                                            ) : fac.estado_sri === 'PROCESANDO' ? (
+                                                <span className="text-xs font-bold text-yellow-700 bg-yellow-100 px-3 py-1.5 rounded-lg">Procesando</span>
+                                            ) : (
+                                                <button
+                                                    onClick={() => alert(`Detalle del Reporte SRI:\n\n${fac.mensaje_sri || 'Ocurrió un problema de conexión o validación con los servidores del SRI.'}`)}
+                                                    className="text-xs font-bold text-red-700 bg-red-100 hover:bg-red-200 px-3 py-1.5 rounded-lg flex items-center gap-1 transition shadow-sm cursor-pointer"
+                                                    title="Clic para ver el motivo del error"
+                                                >
+                                                    <AlertCircle size={14} />
+                                                    {fac.estado_sri === 'RECHAZADO' ? 'Rechazado' : 'Error'}
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                     <td className="p-5 text-center">
