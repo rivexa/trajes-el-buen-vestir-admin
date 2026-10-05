@@ -121,7 +121,7 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
         setGuardando(true); setError('');
         try {
             const payload = { cliente_id: cliente.id, fecha_entrega_estimada: fechaEntrega || undefined, abono: parseFloat(abono) || 0, detalles };
-            const response = await fetch(API_ORDENES, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const response = await fetch(`${API_ORDENES}/nueva`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
 
             if (response.ok) { onSuccess(); handleClose(); } 
             else {
