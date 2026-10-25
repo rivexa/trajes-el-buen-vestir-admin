@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply bg-grisClaro text-negro font-sans antialiased;
+    @apply bg-grisClaro text-negro text-base font-sans antialiased;
   }
 }
 
@@ -24,7 +24,7 @@
   }
 
   .btn-marca {
-    @apply inline-flex items-center justify-center gap-2 bg-rojoMarca hover:bg-vino text-white px-6 py-3 rounded-xl font-semibold tracking-wide transition-colors w-full md:w-auto;
+    @apply inline-flex items-center justify-center gap-2 bg-rojoMarca hover:bg-vino text-white text-base px-6 py-3 rounded-xl font-semibold tracking-wide transition-colors w-full md:w-auto;
   }
 
   .btn-icono {
@@ -36,7 +36,7 @@
   }
 
   .thead-marca {
-    @apply bg-negro text-white text-[11px] uppercase tracking-[0.16em];
+    @apply bg-negro text-white text-sm uppercase tracking-[0.08em];
   }
 
   .thead-marca th {
@@ -56,7 +56,15 @@
   }
 
   .seccion-modal {
-    @apply text-[11px] font-semibold uppercase tracking-[0.16em] text-grisMarca/70 mb-3 border-b border-negro/5 pb-2;
+    @apply text-[13px] font-semibold uppercase tracking-[0.08em] text-grisMarca/70 mb-3 border-b border-negro/5 pb-2;
+  }
+
+  .select-marca {
+    @apply appearance-none font-semibold rounded-xl border px-4 py-2.5 pr-11 text-left text-base cursor-pointer outline-none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23333333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    background-size: 1.1rem;
   }
 }
 

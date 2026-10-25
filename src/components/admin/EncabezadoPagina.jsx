@@ -10,11 +10,11 @@ export default function EncabezadoPagina({ icon: Icon, title, subtitle, actionLa
                         <Icon size={28} strokeWidth={1.75} />
                     </div>
                     <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-rojoMarca mb-1">
+                        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-rojoMarca mb-1">
                             Trajes El Buen Vestir
                         </p>
-                        <h1 className="text-2xl md:text-[1.85rem] font-serif font-bold text-negro leading-tight">{title}</h1>
-                        <p className="text-grisMarca/80 mt-1 text-sm md:text-[15px]">{subtitle}</p>
+                        <h1 className="text-[1.65rem] md:text-[1.9rem] font-serif font-bold text-negro leading-tight">{title}</h1>
+                        <p className="text-grisMarca/80 mt-1 text-base">{subtitle}</p>
                     </div>
                 </div>
                 {actionLabel && (

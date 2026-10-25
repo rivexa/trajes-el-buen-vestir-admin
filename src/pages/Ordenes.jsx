@@ -263,11 +263,11 @@ export default function Ordenes() {
                                         <div className={`font-bold ${orden.estado === 'Anulada' ? 'text-gray-500 line-through' : 'text-negro'}`}>
                                             ORD-{orden.numero_orden.toString().padStart(4, '0')}
                                         </div>
-                                        <div className="text-xs text-gray-500 mt-1">{new Date(orden.fecha_creacion).toLocaleDateString()}</div>
+                                        <div className="text-[15px] text-gray-500 mt-1">{new Date(orden.fecha_creacion).toLocaleDateString()}</div>
                                     </td>
                                     <td className="p-4">
                                         <div className={`font-semibold ${orden.estado === 'Anulada' ? 'text-gray-500' : 'text-gray-800'}`}>{orden.clientes?.nombres} {orden.clientes?.apellidos}</div>
-                                        <div className="text-sm text-gray-500">{orden.clientes?.cedula_ruc}</div>
+                                        <div className="text-[15px] text-gray-500">{orden.clientes?.cedula_ruc}</div>
                                     </td>
                                     <td className="p-4">
                                         {orden.estado === 'Anulada' ? (
@@ -275,7 +275,7 @@ export default function Ordenes() {
                                                 <span className="text-gray-400 font-bold text-lg">-</span>
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col gap-1 text-sm mx-auto w-32">
+                                            <div className="flex flex-col gap-1 text-[15px] mx-auto w-32">
                                                 <span className="flex justify-between w-full"><span className="text-gray-500">Total:</span> <span>${orden.subtotal}</span></span>
                                                 <span className="flex justify-between w-full font-bold text-rojoMarca"><span className="text-gray-500 font-normal">Saldo:</span> <span>${orden.saldo}</span></span>
                                             </div>
@@ -284,18 +284,18 @@ export default function Ordenes() {
                                     <td className="p-4">
                                         <div className="flex justify-center">
                                             {orden.estado === 'Anulada' ? (
-                                                <span className="text-xs font-bold text-red-500 bg-red-100 px-3 py-1.5 rounded-lg text-center w-full max-w-[160px]">
+                                                <span className="text-[15px] font-bold text-red-500 bg-red-100 px-4 py-2.5 rounded-xl text-center inline-block min-w-[14rem]">
                                                     ANULADA
                                                 </span>
                                             ) : (
                                                 <select
                                                     value={orden.estado}
                                                     onChange={(e) => handleCambiarEstadoLista(orden.id, e.target.value)}
-                                                    className={`text-sm font-bold border rounded-lg p-2 bg-transparent cursor-pointer outline-none transition min-w-[10.5rem] text-center
-                                                        ${orden.estado === 'Pendiente' ? 'text-yellow-700 border-yellow-200 bg-yellow-50' :
-                                                        orden.estado === 'En Confección' ? 'text-blue-700 border-blue-200 bg-blue-50' :
-                                                        orden.estado === 'Listo para Prueba' ? 'text-purple-700 border-purple-200 bg-purple-50' :
-                                                        'text-green-700 border-green-200 bg-green-50'}`}
+                                                    className={`select-marca min-w-[14rem]
+                                                        ${orden.estado === 'Pendiente' ? 'text-yellow-800 border-yellow-200 bg-yellow-50' :
+                                                        orden.estado === 'En Confección' ? 'text-blue-800 border-blue-200 bg-blue-50' :
+                                                        orden.estado === 'Listo para Prueba' ? 'text-purple-800 border-purple-200 bg-purple-50' :
+                                                        'text-green-800 border-green-200 bg-green-50'}`}
                                                 >
                                                     <option value="Pendiente">Pendiente</option>
                                                     <option value="En Confección">En Confección</option>
@@ -308,7 +308,7 @@ export default function Ordenes() {
                                     <td className="p-4">
                                         <div className="flex items-center justify-center gap-1">
                                             {orden.saldo > 0 && orden.estado !== 'Anulada' && (
-                                                <button onClick={() => handleAbrirPago(orden)} className="px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 rounded-lg text-sm font-medium transition flex items-center gap-1 mr-2">
+                                                <button onClick={() => handleAbrirPago(orden)} className="px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 rounded-lg text-[15px] font-medium transition flex items-center gap-1 mr-2">
                                                     <DollarSign size={14} /> Abonar
                                                 </button>
                                             )}
