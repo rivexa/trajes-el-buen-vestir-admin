@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import BarraBusqueda from '../components/admin/BarraBusqueda';
 import EncabezadoClientes from '../components/admin/EncabezadoClientes';
 import ModalEliminar from '../components/admin/ModalEliminar';
 import ModalFormulario from '../components/admin/ModalFormulario';
@@ -48,20 +48,15 @@ export default function Clientes() {
     };
 
     return (
-        <div className="p-4 md:p-8 bg-gray-50 min-h-screen flex flex-col overflow-hidden">
+        <div className="pagina-admin">
             <EncabezadoClientes onNuevo={() => handleOpenForm()} />
 
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex items-center gap-3">
-                <Search className="text-rojoMarca" size={20} />
-                <input
-                    type="search"
-                    aria-label="Buscar clientes"
-                    placeholder="Buscar por cédula, RUC o nombre..."
-                    className="w-full outline-none text-gray-700 bg-transparent"
-                    value={searchInput}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                />
-            </div>
+            <BarraBusqueda
+                label="Buscar clientes"
+                placeholder="Buscar por cédula, RUC o nombre..."
+                value={searchInput}
+                onChange={handleSearchChange}
+            />
 
             <TablaClientes
                 clientes={clientes}

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Plus, Eye, Edit2, DollarSign, Clock, CheckCircle, Package, Search, Trash2, Download, Loader2 } from 'lucide-react';
+import { Eye, Edit2, DollarSign, Package, Trash2, Download, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import BarraBusqueda from '../components/admin/BarraBusqueda';
+import EncabezadoPagina from '../components/admin/EncabezadoPagina';
 import Paginacion from '../components/admin/Paginacion';
 import ModalPago from '../components/admin/ModalPago';
 import ModalNuevaOrden from '../components/admin/ModalNuevaOrden';
@@ -55,8 +57,8 @@ export default function Ordenes() {
         fetchOrdenes();
     }, [currentPage, searchTerm]);
 
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
+    const handleSearchChange = (valor) => {
+        setSearchTerm(valor);
         setCurrentPage(1);
     };
 
@@ -222,63 +224,52 @@ export default function Ordenes() {
     };
 
     return (
-        <div className="p-4 md:p-8 bg-gray-50 min-h-screen flex flex-col overflow-hidden">
+        <div className="pagina-admin">
+            <EncabezadoPagina
+                icon={Package}
+                title="Órdenes de Pedido"
+                subtitle="Confecciones, arreglos y saldo pendiente de cada prenda."
+                actionLabel="Nueva Orden"
+                onAction={() => setIsNuevaOrdenOpen(true)}
+            />
 
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-6 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <div className="flex items-center gap-5">
-                    <div className="bg-negro p-3 rounded-lg text-white shadow-md">
-                        <Package size={32} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl md:text-3xl font-serif font-bold text-negro">Órdenes de Pedido</h1>
-                        <p className="text-gray-500 mt-1 text-sm md:text-base">Historial de confecciones y pagos pendientes.</p>
-                    </div>
-                </div>
-                <button
-                    onClick={() => setIsNuevaOrdenOpen(true)}
-                    className="w-full md:w-auto bg-rojoMarca hover:bg-red-800 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors shadow-md"
-                >
-                    <Plus size={20} /> Nueva Orden
-                </button>
-            </div>
+            <BarraBusqueda
+                label="Buscar órdenes"
+                placeholder="Buscar por N° orden, cédula o cliente..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+            />
 
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex items-center gap-3">
-                <Search className="text-rojoMarca" size={20} />
-                <input
-                    type="text"
-                    placeholder="Buscar por N° orden, cédula o cliente..."
-                    className="w-full outline-none text-gray-700 bg-transparent"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                />
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
-                <div className="overflow-x-auto flex-1 no-scrollbar">
-                    <table className="min-w-full text-left">
-                        <thead className="bg-negro text-white text-sm uppercase tracking-wider">
+            <div className="card-panel flex flex-col flex-1 overflow-hidden">
+                <div className="overflow-x-auto flex-1">
+                    <table className="min-w-[980px] w-full text-left whitespace-nowrap">
+                        <thead className="thead-marca">
                             <tr>
-                                <th className="p-5 font-semibold text-center">Orden</th>
-                                <th className="p-5 font-semibold text-center">Cliente</th>
-                                <th className="p-5 font-semibold text-center">Finanzas</th>
-                                <th className="p-5 font-semibold text-center">Estado del Pedido</th>
-                                <th className="p-5 font-semibold text-center">Acciones</th>
+                                <th>Orden</th>
+                                <th>Cliente</th>
+                                <th className="text-center">Finanzas</th>
+                                <th className="text-center">Estado</th>
+                                <th className="text-center min-w-[7.5rem]">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {ordenes.map((orden) => (
-                                <tr key={orden.id} className={`transition-colors ${orden.estado === 'Anulada' ? 'bg-red-50/50 opacity-60 grayscale' : 'hover:bg-gray-50'}`}>
-                                    <td className="p-5">
+                        <tbody className="divide-y divide-negro/5">
+                            {loading ? (
+                                <tr><td colSpan="5" className="p-12 text-center text-gray-500 font-medium">Consultando órdenes...</td></tr>
+                            ) : ordenes.length === 0 ? (
+                                <tr><td colSpan="5" className="p-12 text-center text-gray-500 font-medium">No se encontraron órdenes.</td></tr>
+                            ) : ordenes.map((orden) => (
+                                <tr key={orden.id} className={`transition-colors ${orden.estado === 'Anulada' ? 'bg-red-50/50 opacity-60 grayscale' : 'hover:bg-grisClaro/70'}`}>
+                                    <td className="p-4">
                                         <div className={`font-bold ${orden.estado === 'Anulada' ? 'text-gray-500 line-through' : 'text-negro'}`}>
                                             ORD-{orden.numero_orden.toString().padStart(4, '0')}
                                         </div>
                                         <div className="text-xs text-gray-500 mt-1">{new Date(orden.fecha_creacion).toLocaleDateString()}</div>
                                     </td>
-                                    <td className="p-5">
+                                    <td className="p-4">
                                         <div className={`font-semibold ${orden.estado === 'Anulada' ? 'text-gray-500' : 'text-gray-800'}`}>{orden.clientes?.nombres} {orden.clientes?.apellidos}</div>
                                         <div className="text-sm text-gray-500">{orden.clientes?.cedula_ruc}</div>
                                     </td>
-                                    <td className="p-5">
+                                    <td className="p-4">
                                         {orden.estado === 'Anulada' ? (
                                             <div className="flex justify-center">
                                                 <span className="text-gray-400 font-bold text-lg">-</span>
@@ -290,7 +281,7 @@ export default function Ordenes() {
                                             </div>
                                         )}
                                     </td>
-                                    <td className="p-5">
+                                    <td className="p-4">
                                         <div className="flex justify-center">
                                             {orden.estado === 'Anulada' ? (
                                                 <span className="text-xs font-bold text-red-500 bg-red-100 px-3 py-1.5 rounded-lg text-center w-full max-w-[160px]">
@@ -300,7 +291,7 @@ export default function Ordenes() {
                                                 <select
                                                     value={orden.estado}
                                                     onChange={(e) => handleCambiarEstadoLista(orden.id, e.target.value)}
-                                                    className={`text-sm font-bold border rounded-lg p-2 bg-transparent cursor-pointer outline-none transition w-full max-w-[160px] text-center
+                                                    className={`text-sm font-bold border rounded-lg p-2 bg-transparent cursor-pointer outline-none transition min-w-[10.5rem] text-center
                                                         ${orden.estado === 'Pendiente' ? 'text-yellow-700 border-yellow-200 bg-yellow-50' :
                                                         orden.estado === 'En Confección' ? 'text-blue-700 border-blue-200 bg-blue-50' :
                                                         orden.estado === 'Listo para Prueba' ? 'text-purple-700 border-purple-200 bg-purple-50' :
@@ -314,7 +305,7 @@ export default function Ordenes() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="p-5">
+                                    <td className="p-4">
                                         <div className="flex items-center justify-center gap-1">
                                             {orden.saldo > 0 && orden.estado !== 'Anulada' && (
                                                 <button onClick={() => handleAbrirPago(orden)} className="px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 rounded-lg text-sm font-medium transition flex items-center gap-1 mr-2">

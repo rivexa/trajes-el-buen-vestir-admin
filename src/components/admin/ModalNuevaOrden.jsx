@@ -134,9 +134,9 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
 
     return (
         <div className="fixed inset-0 bg-negro/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl my-8 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-                
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 shrink-0">
+            <div className="modal-panel w-full max-w-4xl my-8 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                <div className="h-1 bg-rojoMarca shrink-0" />
+                <div className="modal-cabecera">
                     <h2 className="text-xl font-serif font-bold text-negro flex items-center gap-2"><PackagePlus className="text-rojoMarca" /> Nueva Orden de Pedido</h2>
                     <button onClick={handleClose} className="text-gray-400 hover:text-rojoMarca transition"><X size={24} /></button>
                 </div>
@@ -144,7 +144,7 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
                 <div className="p-6 overflow-y-auto flex-1 bg-white space-y-8">
                     {/* SECCIÓN 1: Cliente y Formulario Rápido */}
                     <div>
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">1. Selección del Cliente</h3>
+                        <h3 className="seccion-modal">1. Selección del Cliente</h3>
                         <form onSubmit={buscarCliente} className="flex gap-3 mb-4">
                             <div className="relative flex-1">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -184,7 +184,7 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
 
                     {/* SECCIÓN 2: Prendas */}
                     <div className={`transition-opacity ${!cliente ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">2. Prendas y Servicios</h3>
+                        <h3 className="seccion-modal">2. Prendas y Servicios</h3>
                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                             <div className="md:col-span-3"><label className="block text-xs font-semibold text-gray-600 mb-1">Tipo</label><select value={nuevoItem.tipo_item} onChange={(e) => setNuevoItem({...nuevoItem, tipo_item: e.target.value})} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm"><option value="Confección">Confección a Medida</option><option value="Arreglo">Arreglo / Ajuste</option><option value="Uniforme">Uniforme Corporativo</option><option value="Otro">Otro</option></select></div>
                             <div className="md:col-span-4"><label className="block text-xs font-semibold text-gray-600 mb-1">Descripción</label><input type="text" value={nuevoItem.descripcion} onChange={(e) => setNuevoItem({...nuevoItem, descripcion: e.target.value})} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" /></div>
@@ -225,7 +225,7 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
 
                     {/* SECCIÓN 3: Finanzas */}
                     <div className={`transition-opacity ${detalles.length === 0 ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">3. Condiciones Comerciales</h3>
+                        <h3 className="seccion-modal">3. Condiciones Comerciales</h3>
                         <div className="flex flex-col md:flex-row gap-8">
                             <div className="flex-1 space-y-4">
                                 <div><label className="block text-xs font-semibold text-gray-600 mb-1">Fecha de Entrega Estimada</label><input type="date" value={fechaEntrega} onChange={(e) => setFechaEntrega(e.target.value)} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-rojoMarca" /></div>
@@ -240,11 +240,11 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row justify-between items-center p-6 border-t border-gray-100 bg-gray-50 shrink-0 gap-4">
-                    <div className="w-full sm:w-auto text-center sm:text-left text-red-600 font-medium text-sm">{error}</div>
+                <div className="modal-pie flex-col sm:flex-row justify-between items-center">
+                    <div className="w-full sm:w-auto text-center sm:text-left text-rojoMarca font-medium text-sm">{error}</div>
                     <div className="flex gap-3 w-full sm:w-auto">
-                        <button onClick={handleClose} className="flex-1 sm:flex-none px-6 py-3 text-negro font-medium hover:bg-gray-200 rounded-lg transition border">Cancelar</button>
-                        <button onClick={handleSubmit} disabled={guardando || detalles.length === 0 || saldoCalculado < 0 || !cliente} className="flex-1 sm:flex-none px-8 py-3 bg-rojoMarca text-white font-bold rounded-lg hover:bg-red-800 disabled:opacity-50">
+                        <button type="button" onClick={handleClose} className="flex-1 sm:flex-none px-6 py-3 text-negro font-medium hover:bg-white rounded-xl transition border border-negro/10">Cancelar</button>
+                        <button type="button" onClick={handleSubmit} disabled={guardando || detalles.length === 0 || saldoCalculado < 0 || !cliente} className="btn-marca flex-1 sm:flex-none disabled:opacity-50">
                             {guardando ? 'Guardando...' : 'Crear Orden'}
                         </button>
                     </div>

@@ -2,17 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #F8F9FA;
-  color: #111111;
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-grisClaro text-negro font-sans antialiased;
+  }
 }
 
-/* Ocultar scrollbar en navegadores WebKit (Chrome, Safari, Edge) */
+@layer components {
+  .pagina-admin {
+    @apply p-4 md:p-8 min-h-full flex flex-col;
+  }
+
+  .card-panel {
+    @apply bg-white rounded-2xl border border-negro/5 shadow-panel;
+  }
+
+  .btn-marca {
+    @apply inline-flex items-center justify-center gap-2 bg-rojoMarca hover:bg-vino text-white px-6 py-3 rounded-xl font-semibold tracking-wide transition-colors w-full md:w-auto;
+  }
+
+  .btn-icono {
+    @apply p-2 rounded-lg text-grisMarca hover:bg-grisClaro hover:text-negro transition;
+  }
+
+  .btn-icono-peligro {
+    @apply p-2 rounded-lg text-rojoMarca hover:bg-red-50 transition;
+  }
+
+  .thead-marca {
+    @apply bg-negro text-white text-[11px] uppercase tracking-[0.16em];
+  }
+
+  .thead-marca th {
+    @apply p-4 font-semibold whitespace-nowrap;
+  }
+
+  .modal-panel {
+    @apply bg-white rounded-2xl shadow-panel overflow-hidden;
+  }
+
+  .modal-cabecera {
+    @apply flex justify-between items-center p-6 border-b border-negro/5 bg-grisClaro/60 shrink-0;
+  }
+
+  .modal-pie {
+    @apply flex gap-3 p-6 border-t border-negro/5 bg-grisClaro/60 shrink-0;
+  }
+
+  .seccion-modal {
+    @apply text-[11px] font-semibold uppercase tracking-[0.16em] text-grisMarca/70 mb-3 border-b border-negro/5 pb-2;
+  }
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Ocultar scrollbar en Firefox e IE */
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

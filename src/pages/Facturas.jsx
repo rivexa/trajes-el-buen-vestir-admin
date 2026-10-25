@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Receipt, Search, Download, Plus, Trash2, Eye, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Receipt, Download, Trash2, Eye, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import BarraBusqueda from '../components/admin/BarraBusqueda';
+import EncabezadoPagina from '../components/admin/EncabezadoPagina';
 import Paginacion from '../components/admin/Paginacion';
 import ModalNuevaFactura from '../components/admin/ModalNuevaFactura';
 import ModalDetalleFactura from '../components/admin/ModalDetalleFactura';
@@ -124,63 +126,64 @@ export default function Facturas() {
     };
 
     return (
-        <div className="p-4 md:p-8 bg-gray-50 min-h-screen flex flex-col overflow-hidden">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-6 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <div className="flex items-center gap-5">
-                    <div className="bg-negro p-3 rounded-lg text-white shadow-md"><Receipt size={32} /></div>
-                    <div>
-                        <h1 className="text-2xl md:text-3xl font-serif font-bold text-negro">Facturación SRI</h1>
-                        <p className="text-gray-500 mt-1 text-sm md:text-base">Historial de facturas emitidas y gestión contable.</p>
-                    </div>
-                </div>
-                <button onClick={() => setIsFacturaOpen(true)} className="w-full md:w-auto bg-rojoMarca hover:bg-red-800 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors shadow-md">
-                    <Plus size={20} /> Nueva Factura
-                </button>
-            </div>
+        <div className="pagina-admin">
+            <EncabezadoPagina
+                icon={Receipt}
+                title="Facturación SRI"
+                subtitle="Comprobantes emitidos y estado de autorización."
+                actionLabel="Nueva Factura"
+                onAction={() => setIsFacturaOpen(true)}
+            />
 
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex items-center gap-3">
-                <Search className="text-rojoMarca" size={20} />
-                <input type="text" placeholder="Buscar por cédula o cliente..." className="w-full outline-none text-gray-700 bg-transparent" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }} />
-            </div>
+            <BarraBusqueda
+                label="Buscar facturas"
+                placeholder="Buscar por cédula o cliente..."
+                value={searchTerm}
+                onChange={(valor) => { setSearchTerm(valor); setCurrentPage(1); }}
+            />
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
-                <div className="overflow-x-auto flex-1 no-scrollbar">
-                    <table className="min-w-full text-left text-sm">
-                        <thead className="bg-negro text-white uppercase tracking-wider">
+            <div className="card-panel flex flex-col flex-1 overflow-hidden">
+                <div className="overflow-x-auto flex-1">
+                    <table className="min-w-[1040px] w-full text-left text-sm">
+                        <thead className="thead-marca">
                             <tr>
-                                <th className="p-5 font-semibold text-center">N° Factura</th>
-                                <th className="p-5 font-semibold text-center">Cliente</th>
-                                <th className="p-5 font-semibold text-center">Orden</th>
-                                <th className="p-5 font-semibold text-center">Método Pago</th>
-                                <th className="p-5 font-semibold text-center">Finanzas</th>
-                                <th className="p-5 font-semibold text-center">Estado SRI</th>
-                                <th className="p-5 font-semibold text-center">Acciones</th>
+                                <th>N° Factura</th>
+                                <th>Cliente</th>
+                                <th>Orden</th>
+                                <th>Método Pago</th>
+                                <th className="text-center">Finanzas</th>
+                                <th className="text-center">Estado SRI</th>
+                                <th className="text-center min-w-[7.5rem]">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {facturas.map((fac) => (
-                                <tr key={fac.id} className={`transition-colors ${fac.estado_sri === 'ANULADA' ? 'bg-red-50/50 grayscale opacity-70' : 'hover:bg-gray-50'}`}>
-                                    <td className="p-5 text-center font-bold text-negro">
+                        <tbody className="divide-y divide-negro/5">
+                            {loading ? (
+                                <tr><td colSpan="7" className="p-12 text-center text-gray-500 font-medium">Consultando facturas...</td></tr>
+                            ) : facturas.length === 0 ? (
+                                <tr><td colSpan="7" className="p-12 text-center text-gray-500 font-medium">No se encontraron facturas.</td></tr>
+                            ) : facturas.map((fac) => (
+                                <tr key={fac.id} className={`transition-colors ${fac.estado_sri === 'ANULADA' ? 'bg-red-50/50 grayscale opacity-70' : 'hover:bg-grisClaro/70'}`}>
+                                    <td className="p-4 text-center font-bold text-negro">
                                         {fac.estado_sri === 'ANULADA' ? <span className="line-through text-gray-400">FAC-{fac.secuencial_local?.toString().padStart(5, '0')}</span> : `FAC-${fac.secuencial_local?.toString().padStart(5, '0')}`}
                                         <div className="text-xs text-gray-500 font-normal mt-1">{new Date(fac.fecha_emision).toLocaleDateString()}</div>
                                     </td>
-                                    <td className="p-5 text-center">
+                                    <td className="p-4 text-center">
                                         <div className="font-semibold text-gray-800">{fac.clientes?.nombres} {fac.clientes?.apellidos}</div>
                                         <div className="text-xs text-gray-500">{fac.clientes?.cedula_ruc}</div>
                                     </td>
-                                    <td className="p-5 text-center font-medium text-gray-600">
+                                    <td className="p-4 text-center font-medium text-gray-600">
                                         {fac.ordenes_pedido?.numero_orden ? `ORD-${fac.ordenes_pedido.numero_orden.toString().padStart(4, '0')}` : 'Venta Directa'}
                                     </td>
-                                    <td className="p-5 text-center font-medium text-gray-700">
+                                    <td className="p-4 text-center font-medium text-gray-700">
                                         <span className="bg-gray-100 px-3 py-1 rounded-full text-xs border border-gray-200">{fac.metodo_pago}</span>
                                     </td>
-                                    <td className="p-5 text-center">
+                                    <td className="p-4 text-center">
                                         <div className="flex flex-col gap-1 mx-auto w-24 text-xs">
                                             <span className="flex justify-between w-full"><span className="text-gray-500">Sub:</span> <span>${fac.subtotal_factura}</span></span>
                                             <span className="flex justify-between w-full font-bold text-rojoMarca border-t pt-1"><span className="text-gray-500">Total:</span> <span>${fac.total_factura}</span></span>
                                         </div>
                                     </td>
-                                    <td className="p-5 text-center">
+                                    <td className="p-4 text-center">
                                         <div className="flex justify-center">
                                             {fac.estado_sri === 'AUTORIZADO' ? (
                                                 <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1.5 rounded-lg">Autorizado</span>
@@ -200,7 +203,7 @@ export default function Facturas() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="p-5 text-center">
+                                    <td className="p-4 text-center">
                                         <div className="flex items-center justify-center gap-1">
                                             <button onClick={() => { setFacturaIdVer(fac.id); setIsDetalleOpen(true); }} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition" title="Ver Detalles"><Eye size={18} /></button>
 

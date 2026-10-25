@@ -22,8 +22,9 @@ export default function ModalDetalleFactura({ isOpen, onClose, facturaId }) {
 
     return (
         <div className="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
-                <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-gray-50 shrink-0">
+            <div className="modal-panel w-full max-w-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+                <div className="h-1 bg-rojoMarca shrink-0" />
+                <div className="modal-cabecera">
                     <h2 className="text-xl font-serif font-bold text-negro flex items-center gap-2">
                         <Receipt className="text-rojoMarca" /> Detalle de Factura
                     </h2>

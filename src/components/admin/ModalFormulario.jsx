@@ -81,10 +81,11 @@ function FormularioCliente({ clienteEdicion, onClose, onSubmitSuccess }) {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="modal-cliente-titulo"
-                className="bg-white rounded-xl shadow-2xl w-full max-w-2xl my-8"
+                className="modal-panel w-full max-w-2xl my-8"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 rounded-t-xl">
+                <div className="h-1 bg-rojoMarca" />
+                <div className="modal-cabecera">
                     <h2 id="modal-cliente-titulo" className="text-xl font-serif font-bold text-negro flex items-center gap-2">
                         <User className="text-rojoMarca" />
                         {clienteEdicion ? 'Editar Perfil del Cliente' : 'Registrar Nuevo Cliente'}
@@ -126,9 +127,9 @@ function FormularioCliente({ clienteEdicion, onClose, onSubmitSuccess }) {
                             <input id="cliente-direccion" type="text" name="direccion" value={formData.direccion} onChange={handleInputChange} className={campoClase} />
                         </div>
                     </div>
-                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                        <button type="button" onClick={onClose} className="px-6 py-3 text-negro font-medium hover:bg-gray-100 rounded-lg transition border border-gray-200">Cancelar</button>
-                        <button type="submit" disabled={guardando} className="px-6 py-3 bg-rojoMarca text-white font-medium rounded-lg hover:bg-red-800 shadow-md transition disabled:opacity-50">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-negro/5">
+                        <button type="button" onClick={onClose} className="px-6 py-3 text-negro font-medium hover:bg-grisClaro rounded-xl transition border border-negro/10">Cancelar</button>
+                        <button type="submit" disabled={guardando} className="btn-marca disabled:opacity-50">
                             {guardando ? 'Guardando...' : clienteEdicion ? 'Actualizar Datos' : 'Guardar Cliente'}
                         </button>
                     </div>

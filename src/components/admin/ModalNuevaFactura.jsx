@@ -159,9 +159,9 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
 
     return (
         <div className="fixed inset-0 bg-negro/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl my-8 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 shrink-0">
+            <div className="modal-panel w-full max-w-4xl my-8 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                <div className="h-1 bg-rojoMarca shrink-0" />
+                <div className="modal-cabecera">
                     <h2 className="text-xl font-serif font-bold text-negro flex items-center gap-2">
                         <Receipt className="text-rojoMarca" /> Emitir Factura Electrónica
                     </h2>
@@ -172,7 +172,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
 
                     {/* SECCIÓN 1: Cliente y Formulario Rápido */}
                     <div>
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">1. Selección del Cliente</h3>
+                        <h3 className="seccion-modal">1. Selección del Cliente</h3>
                         <form onSubmit={buscarCliente} className="flex gap-3 mb-4">
                             <div className="relative flex-1">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -235,7 +235,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                     {/* SECCIÓN 2: Origen */}
                     {cliente && (
                         <div className="animate-in fade-in slide-in-from-bottom-2">
-                            <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">2. Origen de la Venta</h3>
+                            <h3 className="seccion-modal">2. Origen de la Venta</h3>
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <button type="button" onClick={() => { setOrigenFacturacion('directa'); setOrdenId(''); setDetalles([]); }} className={`flex-1 p-5 rounded-xl border-2 transition-all flex flex-col items-center gap-3 cursor-pointer ${origenFacturacion === 'directa' ? 'border-rojoMarca bg-red-50 text-rojoMarca' : 'border-gray-200 text-gray-500 hover:border-red-200 hover:bg-red-50/30'}`}>
                                     <ShoppingCart size={32} /> <span className="font-bold">Venta Directa de Mostrador</span>
@@ -250,7 +250,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                     {/* SECCIÓN 3A: Órdenes */}
                     {cliente && origenFacturacion === 'orden' && (
                         <div className="animate-in fade-in slide-in-from-bottom-2">
-                            <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">Órdenes Pendientes</h3>
+                            <h3 className="seccion-modal">Órdenes Pendientes</h3>
                             {ordenesPendientes.length === 0 ? (
                                 <div className="text-center p-6 bg-gray-50 rounded-lg border border-dashed border-gray-300 text-gray-500 text-sm">Este cliente no tiene órdenes de pedido pendientes.</div>
                             ) : (
@@ -297,7 +297,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                     {/* SECCIÓN 3B: Carrito */}
                     {cliente && (origenFacturacion === 'directa' || (origenFacturacion === 'orden' && ordenId)) && (
                         <div className="animate-in fade-in slide-in-from-bottom-2">
-                            <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">3. Ítems a Facturar</h3>
+                            <h3 className="seccion-modal">3. Ítems a Facturar</h3>
                             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                                 <div className="md:col-span-6"><label className="block text-xs font-semibold text-gray-600 mb-1">Añadir Ítem</label><input type="text" value={nuevoItem.descripcion} onChange={(e) => setNuevoItem({ ...nuevoItem, descripcion: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" /></div>
                                 <div className="md:col-span-2"><label className="block text-xs font-semibold text-gray-600 mb-1">Cant.</label><input type="number" min="1" value={nuevoItem.cantidad} onChange={(e) => setNuevoItem({ ...nuevoItem, cantidad: parseInt(e.target.value) || 1 })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" /></div>
@@ -329,7 +329,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                     )}
                 </div>
 
-                <div className="p-6 border-t border-gray-100 bg-gray-50 shrink-0 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="modal-pie flex-col md:flex-row justify-between items-center">
                     <div className="flex items-center gap-3 w-full md:w-auto">
                         <label className="text-sm font-semibold text-gray-600">Método de Pago:</label>
                         <select value={metodoPago} onChange={(e) => setMetodoPago(e.target.value)} className="p-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-rojoMarca bg-white font-medium">
@@ -345,7 +345,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                             <p className="text-xs text-gray-500 font-bold uppercase tracking-wide">Total a Facturar</p>
                             <p className="text-2xl font-bold text-rojoMarca">${subtotal.toFixed(2)}</p>
                         </div>
-                        <button onClick={handleSubmit} disabled={guardando || detalles.length === 0 || !cliente} className="px-8 py-3 bg-rojoMarca text-white font-bold rounded-lg hover:bg-red-800 transition shadow-md disabled:opacity-50 flex items-center gap-2">
+                        <button type="button" onClick={handleSubmit} disabled={guardando || detalles.length === 0 || !cliente} className="btn-marca disabled:opacity-50">
                             {guardando ? <Loader2 size={18} className="animate-spin" /> : <Receipt size={18} />} {guardando ? 'Emitiendo...' : 'Emitir Factura'}
                         </button>
                     </div>

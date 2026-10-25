@@ -47,8 +47,9 @@ export default function ModalPago({ isOpen, onClose, orden, onSuccess }) {
 
     return (
         <div className="fixed inset-0 bg-negro/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50">
+            <div className="modal-panel w-full max-w-md animate-in zoom-in-95 duration-200">
+                <div className="h-1 bg-rojoMarca" />
+                <div className="modal-cabecera">
                     <h2 className="text-xl font-serif font-bold text-negro flex items-center gap-2">
                         <DollarSign className="text-green-600" /> Registrar Pago
                     </h2>
