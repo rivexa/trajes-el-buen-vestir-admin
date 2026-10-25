@@ -144,7 +144,7 @@ export default function Facturas() {
 
             <div className="card-panel flex flex-col flex-1 overflow-hidden">
                 <div className="overflow-x-auto flex-1">
-                    <table className="min-w-[1040px] w-full text-left text-sm">
+                    <table className="min-w-[1040px] w-full text-left text-base">
                         <thead className="thead-marca">
                             <tr>
                                 <th>N° Factura</th>
@@ -165,20 +165,20 @@ export default function Facturas() {
                                 <tr key={fac.id} className={`transition-colors ${fac.estado_sri === 'ANULADA' ? 'bg-red-50/50 grayscale opacity-70' : 'hover:bg-grisClaro/70'}`}>
                                     <td className="p-4 text-center font-bold text-negro">
                                         {fac.estado_sri === 'ANULADA' ? <span className="line-through text-gray-400">FAC-{fac.secuencial_local?.toString().padStart(5, '0')}</span> : `FAC-${fac.secuencial_local?.toString().padStart(5, '0')}`}
-                                        <div className="text-xs text-gray-500 font-normal mt-1">{new Date(fac.fecha_emision).toLocaleDateString()}</div>
+                                        <div className="text-[15px] text-gray-500 font-normal mt-1">{new Date(fac.fecha_emision).toLocaleDateString()}</div>
                                     </td>
                                     <td className="p-4 text-center">
                                         <div className="font-semibold text-gray-800">{fac.clientes?.nombres} {fac.clientes?.apellidos}</div>
-                                        <div className="text-xs text-gray-500">{fac.clientes?.cedula_ruc}</div>
+                                        <div className="text-[15px] text-gray-500">{fac.clientes?.cedula_ruc}</div>
                                     </td>
                                     <td className="p-4 text-center font-medium text-gray-600">
                                         {fac.ordenes_pedido?.numero_orden ? `ORD-${fac.ordenes_pedido.numero_orden.toString().padStart(4, '0')}` : 'Venta Directa'}
                                     </td>
                                     <td className="p-4 text-center font-medium text-gray-700">
-                                        <span className="bg-gray-100 px-3 py-1 rounded-full text-xs border border-gray-200">{fac.metodo_pago}</span>
+                                        <span className="bg-gray-100 px-3 py-1 rounded-full text-[13px] border border-gray-200">{fac.metodo_pago}</span>
                                     </td>
                                     <td className="p-4 text-center">
-                                        <div className="flex flex-col gap-1 mx-auto w-24 text-xs">
+                                        <div className="flex flex-col gap-1 mx-auto w-28 text-[15px]">
                                             <span className="flex justify-between w-full"><span className="text-gray-500">Sub:</span> <span>${fac.subtotal_factura}</span></span>
                                             <span className="flex justify-between w-full font-bold text-rojoMarca border-t pt-1"><span className="text-gray-500">Total:</span> <span>${fac.total_factura}</span></span>
                                         </div>
@@ -186,15 +186,15 @@ export default function Facturas() {
                                     <td className="p-4 text-center">
                                         <div className="flex justify-center">
                                             {fac.estado_sri === 'AUTORIZADO' ? (
-                                                <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1.5 rounded-lg">Autorizado</span>
+                                                <span className="text-[13px] font-bold text-green-700 bg-green-100 px-3 py-1.5 rounded-lg">Autorizado</span>
                                             ) : fac.estado_sri === 'ANULADA' ? (
-                                                <span className="text-xs font-bold text-gray-700 bg-gray-200 px-3 py-1.5 rounded-lg">Anulada</span>
+                                                <span className="text-[13px] font-bold text-gray-700 bg-gray-200 px-3 py-1.5 rounded-lg">Anulada</span>
                                             ) : fac.estado_sri === 'PROCESANDO' ? (
-                                                <span className="text-xs font-bold text-yellow-700 bg-yellow-100 px-3 py-1.5 rounded-lg">Procesando</span>
+                                                <span className="text-[13px] font-bold text-yellow-700 bg-yellow-100 px-3 py-1.5 rounded-lg">Procesando</span>
                                             ) : (
                                                 <button
                                                     onClick={() => alert(`Detalle del Reporte SRI:\n\n${fac.mensaje_sri || 'Ocurrió un problema de conexión o validación con los servidores del SRI.'}`)}
-                                                    className="text-xs font-bold text-red-700 bg-red-100 hover:bg-red-200 px-3 py-1.5 rounded-lg flex items-center gap-1 transition shadow-sm cursor-pointer"
+                                                    className="text-[13px] font-bold text-red-700 bg-red-100 hover:bg-red-200 px-3 py-1.5 rounded-lg flex items-center gap-1 transition shadow-sm cursor-pointer"
                                                     title="Clic para ver el motivo del error"
                                                 >
                                                     <AlertCircle size={14} />

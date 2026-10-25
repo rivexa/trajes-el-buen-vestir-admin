@@ -332,7 +332,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                 <div className="modal-pie flex-col md:flex-row justify-between items-center">
                     <div className="flex items-center gap-3 w-full md:w-auto">
                         <label className="text-sm font-semibold text-gray-600">Método de Pago:</label>
-                        <select value={metodoPago} onChange={(e) => setMetodoPago(e.target.value)} className="p-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-rojoMarca bg-white font-medium">
+                        <select value={metodoPago} onChange={(e) => setMetodoPago(e.target.value)} className="select-marca bg-white border-gray-300 focus:border-rojoMarca">
                             <option value="Efectivo">Efectivo</option>
                             <option value="Transferencia">Transferencia</option>
                             <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>

@@ -24,7 +24,7 @@ export default function TablaClientes({
                             <th className="text-center w-[18%]">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-negro/5 text-grisMarca">
+                    <tbody className="divide-y divide-negro/5 text-base text-grisMarca">
                         {loading ? (
                             <tr><td colSpan="4" className="p-12 text-center text-gray-500 font-medium">Consultando base de datos...</td></tr>
                         ) : error ? (
@@ -41,13 +41,13 @@ export default function TablaClientes({
                                 <tr key={cliente.id} className="hover:bg-grisClaro/70 transition-colors">
                                     <td className="p-4">
                                         <div className="flex items-center gap-3">
-                                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-negro text-[12px] font-semibold tracking-wide text-white">
+                                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-negro text-[13px] font-semibold tracking-wide text-white">
                                                 {iniciales(cliente.nombres, cliente.apellidos)}
                                             </span>
                                             <div>
                                                 <div className="font-semibold text-negro">{cliente.nombres} {cliente.apellidos}</div>
-                                                <div className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
-                                                    <MapPin size={13} className="text-rojoMarca" /> {cliente.direccion || 'Sin dirección'}
+                                                <div className="text-[15px] text-gray-500 flex items-center gap-1 mt-0.5">
+                                                    <MapPin size={14} className="text-rojoMarca" /> {cliente.direccion || 'Sin dirección'}
                                                 </div>
                                             </div>
                                         </div>
@@ -56,9 +56,9 @@ export default function TablaClientes({
                                         <div className="flex items-center gap-2 tabular-nums"><CreditCard size={15} className="text-gray-400" /> {cliente.cedula_ruc}</div>
                                     </td>
                                     <td className="p-4">
-                                        <div className="flex flex-col gap-1 text-sm">
-                                            <span className="flex items-center gap-2"><Phone size={13} className="text-gray-400" /> {cliente.telefono || '-'}</span>
-                                            <span className="flex items-center gap-2"><Mail size={13} className="text-gray-400" /> {cliente.correo || '-'}</span>
+                                        <div className="flex flex-col gap-1 text-[15px]">
+                                            <span className="flex items-center gap-2"><Phone size={14} className="text-gray-400" /> {cliente.telefono || '-'}</span>
+                                            <span className="flex items-center gap-2"><Mail size={14} className="text-gray-400" /> {cliente.correo || '-'}</span>
                                         </div>
                                     </td>
                                     <td className="p-4">

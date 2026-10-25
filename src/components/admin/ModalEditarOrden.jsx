@@ -181,7 +181,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                                     <div className="md:col-span-3">
                                         <label className="block text-xs font-semibold text-gray-600 mb-1">Tipo</label>
-                                        <select value={nuevoItem.tipo_item} onChange={(e) => setNuevoItem({ ...nuevoItem, tipo_item: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm">
+                                        <select value={nuevoItem.tipo_item} onChange={(e) => setNuevoItem({ ...nuevoItem, tipo_item: e.target.value })} className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca">
                                             <option value="Confección">Confección a Medida</option>
                                             <option value="Arreglo">Arreglo / Ajuste</option>
                                             <option value="Uniforme">Uniforme Corporativo</option>
