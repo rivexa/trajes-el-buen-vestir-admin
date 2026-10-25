@@ -39,9 +39,9 @@ export default function ModalDetalleOrden({ isOpen, onClose, ordenId }) {
 
     return (
         <div className="fixed inset-0 bg-negro/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl my-8 animate-in fade-in zoom-in-95 duration-200 overflow-hidden flex flex-col max-h-[90vh]">
-
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 shrink-0">
+            <div className="modal-panel w-full max-w-3xl my-8 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                <div className="h-1 bg-rojoMarca shrink-0" />
+                <div className="modal-cabecera">
                     <h2 className="text-xl font-serif font-bold text-negro flex items-center gap-2">
                         <FileText className="text-rojoMarca" />
                         Detalle de Orden {orden && `ORD-${orden.numero_orden.toString().padStart(4, '0')}`}

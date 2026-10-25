@@ -11,8 +11,18 @@ export default {
         vino: '#722F37',
         negro: '#111111',
         grisMarca: '#333333',
-        grisClaro: '#F8F9FA'
-      }
+        grisClaro: '#F4F1EC',
+      },
+      fontFamily: {
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+        sans: ['"Source Sans 3"', 'system-ui', 'sans-serif'],
+      },
+      spacing: {
+        18: '4.5rem',
+      },
+      boxShadow: {
+        panel: '0 1px 2px rgba(17, 17, 17, 0.04), 0 8px 24px rgba(17, 17, 17, 0.04)',
+      },
     },
   },
   plugins: [],

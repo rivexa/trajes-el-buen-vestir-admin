@@ -148,9 +148,9 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
 
     return (
         <div className="fixed inset-0 bg-negro/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl my-8 animate-in fade-in zoom-in-95 duration-200 overflow-hidden flex flex-col max-h-[90vh]">
-
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 shrink-0">
+            <div className="modal-panel w-full max-w-4xl my-8 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                <div className="h-1 bg-rojoMarca shrink-0" />
+                <div className="modal-cabecera">
                     <h2 className="text-xl font-serif font-bold text-negro flex items-center gap-2">
                         <PackageOpen className="text-rojoMarca" /> Editar Orden de Pedido
                     </h2>
@@ -164,7 +164,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                         <>
                             {/* Cliente Bloqueado (No se puede cambiar en edición) */}
                             <div className="mb-8">
-                                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">1. Cliente Seleccionado</h3>
+                                <h3 className="seccion-modal">1. Cliente Seleccionado</h3>
                                 <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-center gap-3">
                                     <div className="bg-gray-200 p-2 rounded-full text-gray-600"><UserCheck size={20} /></div>
                                     <div>
@@ -176,7 +176,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
 
                             {/* Prendas */}
                             <div className="mb-8">
-                                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">2. Prendas y Servicios</h3>
+                                <h3 className="seccion-modal">2. Prendas y Servicios</h3>
 
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                                     <div className="md:col-span-3">
@@ -258,7 +258,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
 
                             {/* Finanzas */}
                             <div>
-                                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 border-b border-gray-100 pb-2">3. Condiciones Comerciales</h3>
+                                <h3 className="seccion-modal">3. Condiciones Comerciales</h3>
                                 <div className="flex flex-col md:flex-row gap-8">
                                     <div className="flex-1 space-y-4">
                                         <div>
@@ -290,9 +290,9 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                     )}
                 </div>
 
-                <div className="flex justify-end gap-3 p-6 border-t border-gray-100 bg-gray-50 shrink-0">
-                    <button onClick={handleClose} className="px-6 py-3 text-negro font-medium hover:bg-gray-200 rounded-lg transition border border-gray-200">Cancelar</button>
-                    <button onClick={handleSubmitEditar} disabled={guardando || cargandoOrden || detalles.length === 0 || saldoCalculado < 0} className="px-8 py-3 bg-rojoMarca text-white font-bold rounded-lg hover:bg-red-800 transition disabled:opacity-50">
+                <div className="modal-pie justify-end">
+                    <button type="button" onClick={handleClose} className="px-6 py-3 text-negro font-medium hover:bg-white rounded-xl transition border border-negro/10">Cancelar</button>
+                    <button type="button" onClick={handleSubmitEditar} disabled={guardando || cargandoOrden || detalles.length === 0 || saldoCalculado < 0} className="btn-marca disabled:opacity-50">
                         {guardando ? 'Guardando...' : 'Guardar Cambios'}
                     </button>
                 </div>

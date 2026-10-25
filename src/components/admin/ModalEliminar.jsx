@@ -25,10 +25,11 @@ export default function ModalEliminar({
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="modal-eliminar-titulo"
-                className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+                className="modal-panel w-full max-w-md"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50">
+                <div className="h-1 bg-rojoMarca" />
+                <div className="modal-cabecera">
                     <h2 id="modal-eliminar-titulo" className="text-xl font-serif font-bold text-rojoMarca flex items-center gap-2">
                         <AlertTriangle size={24} /> {title}
                     </h2>
@@ -48,15 +49,15 @@ export default function ModalEliminar({
                         <p className="mt-3 text-sm text-red-600 font-medium">{error}</p>
                     )}
                 </div>
-                <div className="flex gap-3 p-6 border-t border-gray-100 bg-gray-50">
-                    <button type="button" onClick={onClose} className="flex-1 py-3 bg-gray-200 text-negro font-medium rounded-lg hover:bg-gray-300 transition">
+                <div className="modal-pie">
+                    <button type="button" onClick={onClose} className="flex-1 py-3 bg-white text-negro font-medium rounded-xl hover:bg-grisClaro transition border border-negro/10">
                         Cancelar
                     </button>
                     <button
                         type="button"
                         onClick={onConfirm}
                         disabled={confirming}
-                        className="flex-1 py-3 bg-rojoMarca text-white font-medium rounded-lg hover:bg-red-800 transition disabled:opacity-50"
+                        className="flex-1 py-3 bg-rojoMarca text-white font-medium rounded-xl hover:bg-vino transition disabled:opacity-50"
                     >
                         {confirming ? 'Procesando...' : actionText}
                     </button>

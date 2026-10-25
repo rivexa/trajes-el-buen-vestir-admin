@@ -5,7 +5,7 @@ export default function Paginacion({ currentPage, totalPages, onPageChange }) {
     if (totalPages <= 1) return null;
 
     return (
-        <div className="border-t border-gray-100 p-4 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="border-t border-negro/5 p-4 bg-grisClaro/80 flex flex-col sm:flex-row items-center justify-between gap-3">
             <span className="text-sm text-gray-500">
                 Página <span className="font-medium">{currentPage}</span> de <span className="font-medium">{totalPages}</span>
             </span>
