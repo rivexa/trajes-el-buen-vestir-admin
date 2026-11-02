@@ -142,6 +142,42 @@ export default function ModalDetalleOrden({ isOpen, onClose, ordenId }) {
                                 </div>
                             </div>
 
+                            <div>
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3 flex items-center gap-1 border-b border-gray-100 pb-2">
+                                    <CreditCard size={16} /> Historial de pagos
+                                </h3>
+                                {(orden.orden_pagos || []).length === 0 ? (
+                                    <p className="text-[15px] text-gray-500">Aún no hay pagos registrados en esta orden.</p>
+                                ) : (
+                                    <div className="border border-gray-100 rounded-lg overflow-hidden">
+                                        <table className="min-w-full text-left text-[15px]">
+                                            <thead className="bg-gray-50 text-gray-600">
+                                                <tr>
+                                                    <th className="p-3 font-semibold">Fecha</th>
+                                                    <th className="p-3 font-semibold">Método</th>
+                                                    <th className="p-3 font-semibold">Nota</th>
+                                                    <th className="p-3 font-semibold text-right">Monto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-100">
+                                                {orden.orden_pagos.map((pago) => (
+                                                    <tr key={pago.id}>
+                                                        <td className="p-3">
+                                                            {new Date(pago.fecha_pago).toLocaleString('es-EC', {
+                                                                timeZone: 'America/Guayaquil',
+                                                            })}
+                                                        </td>
+                                                        <td className="p-3">{pago.metodo_pago || 'Efectivo'}</td>
+                                                        <td className="p-3 text-gray-500">{pago.nota || '—'}</td>
+                                                        <td className="p-3 text-right font-semibold text-green-700">${pago.monto}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+
                         </div>
                     ) : null}
                 </div>
