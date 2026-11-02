@@ -13,11 +13,15 @@ describe('Inicio dashboard', () => {
             </MemoryRouter>,
         );
 
+        expect(await screen.findByText('Módulos del taller')).toBeInTheDocument();
+        expect(screen.getByText('Indicadores del negocio')).toBeInTheDocument();
         expect(await screen.findByText('Cartera por cobrar')).toBeInTheDocument();
         expect(screen.getByText('$250.00')).toBeInTheDocument();
         expect(screen.getByText('Órdenes por estado')).toBeInTheDocument();
         expect(screen.getByText('Últimos pagos')).toBeInTheDocument();
         expect(screen.getByText('ORD-0005')).toBeInTheDocument();
+        expect(screen.getByLabelText('Desde')).toBeInTheDocument();
+        expect(screen.getByLabelText('Hasta')).toBeInTheDocument();
     });
 
     it('sigue mostrando crecimiento si el resumen falla parcialmente', async () => {
