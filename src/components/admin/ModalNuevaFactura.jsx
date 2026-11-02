@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Search, Plus, Trash2, Receipt, UserCheck, Package, ShoppingCart, ChevronDown, ChevronUp, Loader2, UserPlus } from 'lucide-react';
+import { Skeleton } from './Skeleton';
 
 const API_CLIENTES = `${import.meta.env.VITE_API_URL}/clientes`;
 const API_ORDENES = `${import.meta.env.VITE_API_URL}/ordenes`;
@@ -283,7 +284,10 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                                                             ))}
                                                         </ul>
                                                     ) : (
-                                                        <div className="flex justify-center py-2"><Loader2 className="animate-spin text-gray-400" size={18} /></div>
+                                                        <div className="space-y-2 py-1">
+                                                            <Skeleton className="h-10 w-full rounded-lg" />
+                                                            <Skeleton className="h-10 w-full rounded-lg" />
+                                                        </div>
                                                     )}
                                                 </div>
                                             )}

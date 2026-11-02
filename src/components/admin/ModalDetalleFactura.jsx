@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Receipt, Loader2, Download } from 'lucide-react';
+import { X, Receipt, Download } from 'lucide-react';
+import { SkeletonBloqueModal } from './Skeleton';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/facturacion`;
 
@@ -33,7 +34,7 @@ export default function ModalDetalleFactura({ isOpen, onClose, facturaId }) {
 
                 <div className="p-6 overflow-y-auto flex-1">
                     {loading ? (
-                        <div className="flex justify-center items-center py-20"><Loader2 className="animate-spin text-gray-400" size={32} /></div>
+                        <SkeletonBloqueModal />
                     ) : factura ? (
                         <div className="space-y-6">
                             <div className="flex justify-between items-start bg-gray-50 p-4 rounded-lg border border-gray-100">

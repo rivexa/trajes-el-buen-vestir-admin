@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Receipt, Download, Trash2, Eye, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { FilasSkeletonTabla } from '../components/admin/Skeleton';
 import BarraBusqueda from '../components/admin/BarraBusqueda';
 import EncabezadoPagina from '../components/admin/EncabezadoPagina';
 import Paginacion from '../components/admin/Paginacion';
@@ -158,7 +159,7 @@ export default function Facturas() {
                         </thead>
                         <tbody className="divide-y divide-negro/5">
                             {loading ? (
-                                <tr><td colSpan="7" className="p-12 text-center text-gray-500 font-medium">Consultando facturas...</td></tr>
+                                <FilasSkeletonTabla filas={6} celdas={7} etiqueta="Cargando facturas" />
                             ) : facturas.length === 0 ? (
                                 <tr><td colSpan="7" className="p-12 text-center text-gray-500 font-medium">No se encontraron facturas.</td></tr>
                             ) : facturas.map((fac) => (

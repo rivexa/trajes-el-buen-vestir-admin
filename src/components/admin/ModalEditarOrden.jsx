@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, UserCheck, PackageOpen, DollarSign, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { SkeletonBloqueModal } from './Skeleton';
 
 const API_ORDENES = `${import.meta.env.VITE_API_URL}/ordenes`;
 
@@ -159,7 +160,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
 
                 <div className="p-6 overflow-y-auto flex-1 bg-white">
                     {cargandoOrden ? (
-                        <div className="flex justify-center items-center py-12"><Loader2 className="animate-spin text-gray-400" size={32} /></div>
+                        <SkeletonBloqueModal />
                     ) : (
                         <>
                             {/* Cliente Bloqueado (No se puede cambiar en edición) */}

@@ -4,7 +4,6 @@ import {
     fetchDashboard,
     fetchHistorialPagos,
 } from '../lib/apiDashboard';
-import { periodoDesdePreset } from '../utils/periodoEcuador';
 
 async function seguro(promesa) {
     try {
@@ -15,7 +14,7 @@ async function seguro(promesa) {
     }
 }
 
-export default function useDashboard(presetId = 'mes') {
+export default function useDashboard(periodo) {
     const [resumen, setResumen] = useState(null);
     const [crecimiento, setCrecimiento] = useState(null);
     const [historialPagos, setHistorialPagos] = useState(null);
@@ -23,17 +22,19 @@ export default function useDashboard(presetId = 'mes') {
     const [error, setError] = useState('');
     const [avisos, setAvisos] = useState([]);
 
-    const periodo = periodoDesdePreset(presetId);
+    const desde = periodo?.desde;
+    const hasta = periodo?.hasta;
 
     const recargar = useCallback(async (signal) => {
+        if (!desde || !hasta) return;
         setError('');
         setAvisos([]);
         setLoading(true);
         try {
             const [dashboard, clientes, pagos] = await Promise.all([
-                seguro(fetchDashboard({ ...periodo, signal })),
-                seguro(fetchCrecimientoClientes({ ...periodo, signal })),
-                seguro(fetchHistorialPagos({ ...periodo, signal })),
+                seguro(fetchDashboard({ desde, hasta, signal })),
+                seguro(fetchCrecimientoClientes({ desde, hasta, signal })),
+                seguro(fetchHistorialPagos({ desde, hasta, signal })),
             ]);
 
             const nuevosAvisos = [];
@@ -68,7 +69,7 @@ export default function useDashboard(presetId = 'mes') {
         } finally {
             if (!signal?.aborted) setLoading(false);
         }
-    }, [periodo.desde, periodo.hasta]);
+    }, [desde, hasta]);
 
     useEffect(() => {
         const ac = new AbortController();
@@ -88,7 +89,6 @@ export default function useDashboard(presetId = 'mes') {
         loading,
         error,
         avisos,
-        periodo,
         recargar: () => recargar(),
     };
 }

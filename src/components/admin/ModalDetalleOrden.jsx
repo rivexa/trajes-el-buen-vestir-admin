@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Package, User, Calendar, CreditCard, FileText, CheckCircle, Clock } from 'lucide-react';
+import { SkeletonBloqueModal } from './Skeleton';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/ordenes`;
 
@@ -51,7 +52,7 @@ export default function ModalDetalleOrden({ isOpen, onClose, ordenId }) {
 
                 <div className="p-6 overflow-y-auto flex-1 bg-white">
                     {loading ? (
-                        <div className="flex justify-center items-center h-40 text-gray-500 font-medium">Cargando información...</div>
+                        <SkeletonBloqueModal />
                     ) : error ? (
                         <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm text-center">{error}</div>
                     ) : orden ? (
