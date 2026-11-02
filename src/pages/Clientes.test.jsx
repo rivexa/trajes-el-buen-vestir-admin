@@ -7,7 +7,7 @@ import Clientes from './Clientes';
 describe('Clientes', () => {
     it('muestra el directorio cuando el API responde', async () => {
         render(<Clientes />);
-        expect(screen.getByText(/Consultando base de datos/)).toBeInTheDocument();
+        expect(screen.getByRole('row', { name: /Cargando clientes/i })).toBeInTheDocument();
         expect(await screen.findByText('Néstor Sarmiento')).toBeInTheDocument();
         expect(screen.getByText('1753329182')).toBeInTheDocument();
     });

@@ -1,6 +1,7 @@
 import { CreditCard, Edit2, Mail, MapPin, Phone, Trash2, Users } from 'lucide-react';
 import iniciales from '../../utils/iniciales';
 import Paginacion from './Paginacion';
+import { FilasSkeletonTabla } from './Skeleton';
 
 export default function TablaClientes({
     clientes,
@@ -26,7 +27,7 @@ export default function TablaClientes({
                     </thead>
                     <tbody className="divide-y divide-negro/5 text-base text-grisMarca">
                         {loading ? (
-                            <tr><td colSpan="4" className="p-12 text-center text-gray-500 font-medium">Consultando base de datos...</td></tr>
+                            <FilasSkeletonTabla filas={6} celdas={4} etiqueta="Cargando clientes" />
                         ) : error ? (
                             <tr><td colSpan="4" className="p-12 text-center text-rojoMarca font-medium">{error}</td></tr>
                         ) : clientes.length === 0 ? (

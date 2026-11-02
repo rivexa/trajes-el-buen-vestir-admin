@@ -13,6 +13,7 @@ describe('Inicio dashboard', () => {
             </MemoryRouter>,
         );
 
+        expect(screen.getByRole('status', { name: /Cargando indicadores/i })).toBeInTheDocument();
         expect(await screen.findByText('Módulos del taller')).toBeInTheDocument();
         expect(screen.getByText('Indicadores del negocio')).toBeInTheDocument();
         expect(await screen.findByText('Cartera por cobrar')).toBeInTheDocument();

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import BarrasHorizontales from '../components/admin/dashboard/BarrasHorizontales';
 import FiltroPeriodo from '../components/admin/dashboard/FiltroPeriodo';
 import GrupoKpis, { MetricaKpi } from '../components/admin/dashboard/GrupoKpis';
+import { SkeletonDashboard } from '../components/admin/Skeleton';
 import useDashboard from '../hooks/useDashboard';
 import formatoDinero from '../utils/formatoDinero';
 import { formatearFechaCorta, periodoDesdePreset } from '../utils/periodoEcuador';
@@ -114,7 +115,7 @@ export default function Inicio() {
                 </div>
 
                 {loading ? (
-                    <div className="card-panel p-10 text-center text-base text-gray-500">Cargando indicadores...</div>
+                    <SkeletonDashboard />
                 ) : error ? (
                     <div className="card-panel p-8 text-center">
                         <AlertTriangle className="mx-auto text-rojoMarca mb-3" size={28} />
