@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Receipt, Download, Trash2, Eye, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { FilasSkeletonTabla } from '../components/admin/Skeleton';
 import BarraBusqueda from '../components/admin/BarraBusqueda';
@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/facturacion`;
+const POLL_PROCESANDO_MS = 8_000;
 
 export default function Facturas() {
     const [facturas, setFacturas] = useState([]);
@@ -26,9 +27,10 @@ export default function Facturas() {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [facturaToAnular, setFacturaToAnular] = useState(null);
     const [procesandoAccion, setProcesandoAccion] = useState(null);
+    const fetchRef = useRef(null);
 
-    const fetchFacturas = async () => {
-        setLoading(true);
+    const fetchFacturas = useCallback(async ({ silent = false } = {}) => {
+        if (!silent) setLoading(true);
         try {
             const response = await fetch(`${API_URL}?page=${currentPage}&limit=${limit}&search=${searchTerm}`);
             if (response.ok) {
@@ -36,16 +38,30 @@ export default function Facturas() {
                 setFacturas(result.data);
                 setTotalPages(result.meta.totalPages);
             }
-        } catch (error) { console.error(error); } finally { setLoading(false); }
-    };
+        } catch (error) { console.error(error); } finally {
+            if (!silent) setLoading(false);
+        }
+    }, [currentPage, searchTerm]);
 
-    useEffect(() => { fetchFacturas(); }, [currentPage, searchTerm]);
+    fetchRef.current = fetchFacturas;
+
+    useEffect(() => { fetchFacturas(); }, [fetchFacturas]);
+
+    const hayProcesando = facturas.some((fac) => fac.estado_sri === 'PROCESANDO');
+
+    useEffect(() => {
+        if (!hayProcesando) return undefined;
+        const timer = setInterval(() => {
+            fetchRef.current?.({ silent: true });
+        }, POLL_PROCESANDO_MS);
+        return () => clearInterval(timer);
+    }, [hayProcesando]);
 
     const handleReintentarSri = async (id) => {
         setProcesandoAccion(`retry-${id}`);
         try {
             const response = await fetch(`${API_URL}/${id}/reintentar`, { method: 'POST' });
-            if (response.ok) fetchFacturas();
+            if (response.ok) fetchFacturas({ silent: true });
             else alert('El SRI sigue sin responder. Intenta más tarde.');
         } catch (error) { console.error(error); } finally { setProcesandoAccion(null); }
     };
@@ -214,8 +230,13 @@ export default function Facturas() {
                                                 </button>
                                             )}
 
-                                            {fac.estado_sri === 'ERROR_CONEXION' && (
-                                                <button onClick={() => handleReintentarSri(fac.id)} disabled={procesandoAccion === `retry-${fac.id}`} className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition disabled:opacity-50" title="Reintentar SRI">
+                                            {(fac.estado_sri === 'ERROR_CONEXION' || fac.estado_sri === 'PROCESANDO') && (
+                                                <button
+                                                    onClick={() => handleReintentarSri(fac.id)}
+                                                    disabled={procesandoAccion === `retry-${fac.id}`}
+                                                    className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition disabled:opacity-50"
+                                                    title={fac.estado_sri === 'PROCESANDO' ? 'Consultar autorización SRI' : 'Reintentar SRI'}
+                                                >
                                                     {procesandoAccion === `retry-${fac.id}` ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
                                                 </button>
                                             )}
