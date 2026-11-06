@@ -205,8 +205,8 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                                         <input type="text" value={datosNuevoCliente.telefono} onChange={e => setDatosNuevoCliente({ ...datosNuevoCliente, telefono: e.target.value })} className="w-full p-2 border border-blue-200 rounded-lg text-sm outline-none focus:border-blue-500" />
                                     </div>
                                     <div className="sm:col-span-2">
-                                        <label className="text-xs font-bold text-blue-900">Correo Electrónico</label>
-                                        <input type="email" value={datosNuevoCliente.correo} onChange={e => setDatosNuevoCliente({ ...datosNuevoCliente, correo: e.target.value })} className="w-full p-2 border border-blue-200 rounded-lg text-sm outline-none focus:border-blue-500" placeholder="cliente@correo.com" />
+                                        <label className="text-xs font-bold text-blue-900">Correo Electrónico *</label>
+                                        <input required type="email" value={datosNuevoCliente.correo} onChange={e => setDatosNuevoCliente({ ...datosNuevoCliente, correo: e.target.value })} className="w-full p-2 border border-blue-200 rounded-lg text-sm outline-none focus:border-blue-500" placeholder="cliente@correo.com" />
                                     </div>
                                     <div className="sm:col-span-2">
                                         <label className="text-xs font-bold text-blue-900">Dirección (Obligatorio para Facturación SRI) *</label>
