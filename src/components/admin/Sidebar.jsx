@@ -1,8 +1,8 @@
-import { FileText, LayoutDashboard, Menu, Receipt, Users, X } from 'lucide-react';
+import { FileText, Home, Menu, Receipt, Users, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const LINKS = [
-    { to: '/', label: 'Inicio', icon: LayoutDashboard },
+    { to: '/', label: 'Inicio', icon: Home },
     { to: '/clientes', label: 'Clientes', icon: Users },
     { to: '/ordenes', label: 'Órdenes', icon: FileText },
     { to: '/facturas', label: 'Facturación', icon: Receipt },
