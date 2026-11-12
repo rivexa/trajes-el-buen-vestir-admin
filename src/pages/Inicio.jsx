@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { AlertTriangle, DollarSign, FileText, Users, Wallet } from 'lucide-react';
-import BarrasHorizontales from '../components/admin/dashboard/BarrasHorizontales';
-import BarrasVerticales from '../components/admin/dashboard/BarrasVerticales';
 import FiltroPeriodo from '../components/admin/dashboard/FiltroPeriodo';
 import GraficaDonut from '../components/admin/dashboard/GraficaDonut';
+import GraficaLinea from '../components/admin/dashboard/GraficaLinea';
 import TarjetaKpi from '../components/admin/dashboard/TarjetaKpi';
 import { SkeletonDashboard } from '../components/admin/Skeleton';
 import useDashboard from '../hooks/useDashboard';
@@ -28,20 +27,19 @@ export default function Inicio() {
     const ventas = resumen?.ventas;
     const clientes = resumen?.clientes;
 
-    const barrasEstados = ORDEN_ESTADOS.map((estado) => ({
+    const donutEstados = ORDEN_ESTADOS.map((estado) => ({
         id: estado,
         etiqueta: estado,
         valor: produccion?.ordenes_por_estado?.[estado] ?? 0,
     })).filter((item) => item.valor > 0);
 
-    const barrasMetodos = Object.entries(ventas?.mix_metodo_pago || {}).map(([metodo, total]) => ({
+    const donutMetodos = Object.entries(ventas?.mix_metodo_pago || {}).map(([metodo, total]) => ({
         id: metodo,
         etiqueta: metodo,
         valor: total,
-        texto: formatoDinero(total),
     }));
 
-    const barrasCobros = (cobranza?.cobros_periodo?.por_dia || [])
+    const serieCobros = (cobranza?.cobros_periodo?.por_dia || [])
         .slice()
         .reverse()
         .slice(0, 12)
@@ -109,7 +107,7 @@ export default function Inicio() {
                             value={formatoDinero(cobranza?.cobros_periodo?.total ?? 0)}
                             hint={`${historialPagos?.meta?.total_movimientos ?? 0} movimientos`}
                             icon={DollarSign}
-                            tone="oscuro"
+                            tone="positivo"
                         />
                         <TarjetaKpi
                             label="Órdenes nuevas"
@@ -120,14 +118,14 @@ export default function Inicio() {
                                     : `${produccion?.entregas_proximas ?? 0} entregas próximas`
                             }
                             icon={FileText}
-                            tone="crema"
+                            tone="info"
                         />
                         <TarjetaKpi
                             label="Clientes"
                             value={String(crecimiento?.total_general ?? clientes?.total ?? 0)}
                             hint={`${crecimiento?.altas_periodo ?? clientes?.altas_periodo ?? 0} nuevos en el período`}
                             icon={Users}
-                            tone="vino"
+                            tone="neutro"
                         />
                         <TarjetaKpi
                             label="Cartera por cobrar"
@@ -143,14 +141,14 @@ export default function Inicio() {
                             <div className="flex items-start justify-between gap-3 mb-2">
                                 <div>
                                     <h2 className="font-serif text-xl font-bold text-negro">Cobros del período</h2>
-                                    <p className="text-[14px] text-grisMarca mt-1">Ingresos registrados día a día</p>
+                                    <p className="text-[14px] text-grisMarca mt-1">Evolución día a día</p>
                                 </div>
-                                <p className="text-[14px] font-semibold tabular-nums text-negro">
+                                <p className="text-[14px] font-semibold tabular-nums text-emerald-700">
                                     {formatoDinero(cobranza?.cobros_periodo?.total ?? 0)}
                                 </p>
                             </div>
-                            <BarrasVerticales
-                                items={barrasCobros}
+                            <GraficaLinea
+                                items={serieCobros}
                                 emptyLabel="Sin cobros registrados en el período."
                                 formatearValor={dineroCorto}
                             />
@@ -160,7 +158,7 @@ export default function Inicio() {
                             <h2 className="font-serif text-xl font-bold text-negro mb-1">Órdenes por estado</h2>
                             <p className="text-[14px] text-grisMarca mb-4">Distribución actual del taller</p>
                             <GraficaDonut
-                                items={barrasEstados}
+                                items={donutEstados}
                                 emptyLabel="Sin órdenes para graficar."
                                 centroLabel="Órdenes"
                             />
@@ -173,9 +171,12 @@ export default function Inicio() {
                             <p className="text-[14px] text-grisMarca mb-4">
                                 Facturado autorizado: {formatoDinero(ventas?.total_facturado_autorizado ?? 0)}
                             </p>
-                            <BarrasHorizontales
-                                items={barrasMetodos}
+                            <GraficaDonut
+                                items={donutMetodos}
                                 emptyLabel="Sin facturas autorizadas en el período."
+                                centroLabel="Total"
+                                formatearCentro={formatoDinero}
+                                formatearValor={formatoDinero}
                             />
                         </section>
 
@@ -198,7 +199,7 @@ export default function Inicio() {
                                                     {formatearFechaCorta(pago.fecha_pago)} · {pago.metodo_pago || 'Efectivo'}
                                                 </p>
                                             </div>
-                                            <span className="font-semibold tabular-nums text-green-700">
+                                            <span className="font-semibold tabular-nums text-emerald-700">
                                                 {formatoDinero(pago.monto)}
                                             </span>
                                         </li>

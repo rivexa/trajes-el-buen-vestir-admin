@@ -1,9 +1,11 @@
-const COLORES = ['#C1121F', '#722F37', '#333333', '#8B7355', '#B8A48A'];
+const COLORES = ['#0F766E', '#2563EB', '#D97706', '#E11D48', '#7C3AED', '#64748B'];
 
 export default function GraficaDonut({
     items,
     emptyLabel = 'Sin datos en el período.',
     centroLabel = 'Total',
+    formatearCentro,
+    formatearValor,
 }) {
     if (!items?.length) {
         return <p className="text-[15px] text-gray-500 py-10 text-center">{emptyLabel}</p>;
@@ -34,6 +36,8 @@ export default function GraficaDonut({
         .map((seg) => `${seg.color} ${seg.inicio}% ${seg.fin}%`)
         .join(', ');
 
+    const textoCentro = formatearCentro ? formatearCentro(total) : String(total);
+
     return (
         <div className="flex flex-col sm:flex-row items-center gap-6">
             <div
@@ -43,7 +47,7 @@ export default function GraficaDonut({
             >
                 <div className="absolute inset-[18%] rounded-full bg-white flex flex-col items-center justify-center text-center px-3">
                     <span className="text-[12px] font-medium text-grisMarca/70">{centroLabel}</span>
-                    <span className="font-serif text-2xl font-bold text-negro tabular-nums">{total}</span>
+                    <span className="font-serif text-xl font-bold text-negro tabular-nums leading-tight">{textoCentro}</span>
                 </div>
             </div>
             <ul className="w-full space-y-2.5">
@@ -54,7 +58,9 @@ export default function GraficaDonut({
                             <span className="truncate text-negro">{seg.etiqueta}</span>
                         </span>
                         <span className="tabular-nums font-semibold text-grisMarca shrink-0">
-                            {seg.porcentaje}% · {seg.valor}
+                            {seg.porcentaje}%
+                            {' · '}
+                            {formatearValor ? formatearValor(seg.valor) : seg.valor}
                         </span>
                     </li>
                 ))}
