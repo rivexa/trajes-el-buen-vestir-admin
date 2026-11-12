@@ -33,7 +33,13 @@ const DASHBOARD_DEMO = {
         ordenes_abono_parcial: 1,
         cobros_periodo: {
             total: 70,
-            por_dia: [{ fecha: '2026-03-12', total: 20, cantidad: 1 }],
+            por_dia: [
+                { fecha: '2026-03-08', total: 10, cantidad: 1 },
+                { fecha: '2026-03-09', total: 15, cantidad: 1 },
+                { fecha: '2026-03-10', total: 20, cantidad: 1 },
+                { fecha: '2026-03-11', total: 5, cantidad: 1 },
+                { fecha: '2026-03-12', total: 20, cantidad: 1 },
+            ],
         },
     },
     ventas: {
