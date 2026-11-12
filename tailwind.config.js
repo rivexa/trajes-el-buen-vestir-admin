@@ -12,6 +12,7 @@ export default {
         negro: '#111111',
         grisMarca: '#333333',
         grisClaro: '#F4F1EC',
+        plomoSuave: '#F2F2F2',
       },
       fontFamily: {
         serif: ['"Playfair Display"', 'Georgia', 'serif'],
@@ -21,7 +22,8 @@ export default {
         18: '4.5rem',
       },
       boxShadow: {
-        panel: '0 1px 2px rgba(17, 17, 17, 0.04), 0 8px 24px rgba(17, 17, 17, 0.04)',
+        panel: '0 1px 2px rgba(17, 17, 17, 0.04), 0 10px 28px rgba(17, 17, 17, 0.06)',
+        sidebar: '4px 0 24px rgba(17, 17, 17, 0.04)',
       },
     },
   },

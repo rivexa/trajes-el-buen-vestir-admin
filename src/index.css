@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply bg-grisClaro text-negro text-base font-sans antialiased;
+    @apply bg-white text-negro text-base font-sans antialiased;
   }
 }
 
@@ -20,7 +20,7 @@
   }
 
   .card-panel {
-    @apply bg-white rounded-2xl border border-negro/5 shadow-panel;
+    @apply bg-white rounded-2xl border border-negro/[0.04] shadow-panel;
   }
 
   .btn-marca {
