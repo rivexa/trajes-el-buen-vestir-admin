@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
@@ -7,6 +8,8 @@ import Inicio from './Inicio';
 
 describe('Inicio dashboard', () => {
     it('muestra indicadores del taller desde el API', async () => {
+        const user = userEvent.setup();
+
         render(
             <MemoryRouter>
                 <Inicio />
@@ -14,13 +17,15 @@ describe('Inicio dashboard', () => {
         );
 
         expect(screen.getByRole('status', { name: /Cargando indicadores/i })).toBeInTheDocument();
-        expect(await screen.findByText('Módulos del taller')).toBeInTheDocument();
-        expect(screen.getByText('Indicadores del negocio')).toBeInTheDocument();
-        expect(await screen.findByText('Cartera por cobrar')).toBeInTheDocument();
-        expect(screen.getByText('$250.00')).toBeInTheDocument();
+        expect(await screen.findByText('Resumen del taller')).toBeInTheDocument();
+        expect(screen.getByText('Cobrado en el período')).toBeInTheDocument();
+        expect(screen.getAllByText('$70.00').length).toBeGreaterThan(0);
+        expect(screen.getByText('Cobros del período')).toBeInTheDocument();
         expect(screen.getByText('Órdenes por estado')).toBeInTheDocument();
         expect(screen.getByText('Últimos pagos')).toBeInTheDocument();
         expect(screen.getByText('ORD-0005')).toBeInTheDocument();
+
+        await user.click(screen.getByRole('button', { name: /\d{2}\/\d{2}\/\d{4}/i }));
         expect(screen.getByLabelText('Desde')).toBeInTheDocument();
         expect(screen.getByLabelText('Hasta')).toBeInTheDocument();
     });
@@ -44,6 +49,6 @@ describe('Inicio dashboard', () => {
         );
 
         expect(await screen.findByText(/Algunos indicadores no respondieron/)).toBeInTheDocument();
-        expect(screen.getByText('Altas de clientes')).toBeInTheDocument();
+        expect(screen.getByText('Clientes')).toBeInTheDocument();
     });
 });

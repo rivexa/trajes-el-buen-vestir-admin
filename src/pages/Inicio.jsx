@@ -1,21 +1,21 @@
 import { useState } from 'react';
-import { AlertTriangle, ArrowRight, FileText, Receipt, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import BarrasHorizontales from '../components/admin/dashboard/BarrasHorizontales';
+import { AlertTriangle, DollarSign, FileText, Users, Wallet } from 'lucide-react';
 import FiltroPeriodo from '../components/admin/dashboard/FiltroPeriodo';
-import GrupoKpis, { MetricaKpi } from '../components/admin/dashboard/GrupoKpis';
+import GraficaDonut from '../components/admin/dashboard/GraficaDonut';
+import GraficaLinea from '../components/admin/dashboard/GraficaLinea';
+import TarjetaKpi from '../components/admin/dashboard/TarjetaKpi';
 import { SkeletonDashboard } from '../components/admin/Skeleton';
 import useDashboard from '../hooks/useDashboard';
 import formatoDinero from '../utils/formatoDinero';
 import { formatearFechaCorta, periodoDesdePreset } from '../utils/periodoEcuador';
 
-const ACCESOS = [
-    { to: '/clientes', icon: Users, title: 'Clientes', copy: 'Directorio y datos de contacto' },
-    { to: '/ordenes', icon: FileText, title: 'Órdenes', copy: 'Pedidos, abonos y entregas' },
-    { to: '/facturas', icon: Receipt, title: 'Facturación', copy: 'Comprobantes y estado SRI' },
-];
-
 const ORDEN_ESTADOS = ['Pendiente', 'En Confección', 'Listo para Prueba', 'Entregado', 'Anulada'];
+
+function dineroCorto(valor) {
+    const numero = Number(valor) || 0;
+    if (numero >= 1000) return `$${(numero / 1000).toFixed(1)}k`;
+    return `$${numero.toFixed(0)}`;
+}
 
 export default function Inicio() {
     const [presetId, setPresetId] = useState('mes');
@@ -27,37 +27,30 @@ export default function Inicio() {
     const ventas = resumen?.ventas;
     const clientes = resumen?.clientes;
 
-    const barrasEstados = ORDEN_ESTADOS.map((estado) => ({
+    const donutEstados = ORDEN_ESTADOS.map((estado) => ({
         id: estado,
         etiqueta: estado,
         valor: produccion?.ordenes_por_estado?.[estado] ?? 0,
-    }));
+    })).filter((item) => item.valor > 0);
 
-    const barrasMetodos = Object.entries(ventas?.mix_metodo_pago || {}).map(([metodo, total]) => ({
+    const donutMetodos = Object.entries(ventas?.mix_metodo_pago || {}).map(([metodo, total]) => ({
         id: metodo,
         etiqueta: metodo,
         valor: total,
-        texto: formatoDinero(total),
     }));
 
-    const barrasCobros = (cobranza?.cobros_periodo?.por_dia || [])
-        .slice(0, 10)
+    const serieCobros = (cobranza?.cobros_periodo?.por_dia || [])
+        .slice()
+        .reverse()
+        .slice(0, 12)
+        .reverse()
         .map((dia) => ({
             id: dia.fecha,
-            etiqueta: formatearFechaCorta(dia.fecha),
+            etiqueta: formatearFechaCorta(dia.fecha).slice(0, 5),
             valor: dia.total,
-            texto: formatoDinero(dia.total),
         }));
 
-    const barrasAltas = (crecimiento?.por_dia || [])
-        .slice(-10)
-        .map((dia) => ({
-            id: dia.fecha,
-            etiqueta: formatearFechaCorta(dia.fecha),
-            valor: dia.altas,
-        }));
-
-    const pagosRecientes = (historialPagos?.data || []).slice(0, 6);
+    const pagosRecientes = (historialPagos?.data || []).slice(0, 5);
 
     const aplicarPreset = (id) => {
         setPresetId(id);
@@ -71,186 +64,152 @@ export default function Inicio() {
 
     return (
         <div className="pagina-admin">
-            <section className="mb-10">
-                <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-rojoMarca mb-2">Accesos</p>
-                <h1 className="font-serif text-3xl font-bold text-negro mb-5">Módulos del taller</h1>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {ACCESOS.map(({ to, icon: Icon, title, copy }) => (
-                        <Link
-                            key={to}
-                            to={to}
-                            className="group flex items-center gap-4 rounded-2xl bg-negro text-white px-5 py-5 hover:bg-vino transition-colors"
-                        >
-                            <span className="bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center shrink-0">
-                                <Icon size={22} strokeWidth={1.75} />
-                            </span>
-                            <span className="min-w-0 flex-1">
-                                <span className="block font-serif text-xl font-bold">{title}</span>
-                                <span className="block text-[15px] text-white/65 mt-0.5">{copy}</span>
-                            </span>
-                            <ArrowRight size={18} className="text-white/50 group-hover:text-white transition shrink-0" />
-                        </Link>
-                    ))}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="font-serif text-3xl font-bold text-negro">Resumen del taller</h1>
+                    <p className="mt-1 text-[15px] text-grisMarca">
+                        Visión rápida de cobros, órdenes y clientes
+                    </p>
                 </div>
-            </section>
+                <FiltroPeriodo
+                    presetId={presetId}
+                    periodo={periodo}
+                    onPreset={aplicarPreset}
+                    onPersonalizado={aplicarPersonalizado}
+                    onRecargar={recargar}
+                />
+            </div>
 
-            <section>
-                <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-5 mb-6">
-                    <div>
-                        <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-rojoMarca mb-2">Dashboard</p>
-                        <h2 className="font-serif text-3xl font-bold text-negro">Indicadores del negocio</h2>
-                        <p className="mt-2 text-base text-grisMarca">
-                            Período {formatearFechaCorta(periodo.desde)} — {formatearFechaCorta(periodo.hasta)}
-                        </p>
-                    </div>
-                    <div className="xl:max-w-2xl w-full card-panel p-4">
-                        <FiltroPeriodo
-                            presetId={presetId}
-                            periodo={periodo}
-                            onPreset={aplicarPreset}
-                            onPersonalizado={aplicarPersonalizado}
-                            onRecargar={recargar}
+            {loading ? (
+                <SkeletonDashboard />
+            ) : error ? (
+                <div className="card-panel p-8 text-center">
+                    <AlertTriangle className="mx-auto text-rojoMarca mb-3" size={28} />
+                    <p className="text-rojoMarca font-medium text-base">{error}</p>
+                    <button type="button" onClick={recargar} className="btn-marca mt-5">
+                        Reintentar
+                    </button>
+                </div>
+            ) : (
+                <div className="space-y-5">
+                    {avisos.length > 0 && (
+                        <div className="card-panel p-4 border-rojoMarca/20 bg-red-50/70">
+                            <p className="font-semibold text-rojoMarca mb-1">Algunos indicadores no respondieron</p>
+                            <ul className="text-[15px] text-rojoMarca/90 list-disc pl-5 space-y-1">
+                                {avisos.map((aviso) => <li key={aviso}>{aviso}</li>)}
+                            </ul>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <TarjetaKpi
+                            label="Cobrado en el período"
+                            value={formatoDinero(cobranza?.cobros_periodo?.total ?? 0)}
+                            hint={`${historialPagos?.meta?.total_movimientos ?? 0} movimientos`}
+                            icon={DollarSign}
+                            tone="positivo"
+                        />
+                        <TarjetaKpi
+                            label="Órdenes nuevas"
+                            value={String(produccion?.ordenes_nuevas_periodo ?? 0)}
+                            hint={
+                                (produccion?.entregas_atrasadas ?? 0) > 0
+                                    ? `${produccion.entregas_atrasadas} entrega(s) atrasada(s)`
+                                    : `${produccion?.entregas_proximas ?? 0} entregas próximas`
+                            }
+                            icon={FileText}
+                            tone="info"
+                        />
+                        <TarjetaKpi
+                            label="Clientes"
+                            value={String(crecimiento?.total_general ?? clientes?.total ?? 0)}
+                            hint={`${crecimiento?.altas_periodo ?? clientes?.altas_periodo ?? 0} nuevos en el período`}
+                            icon={Users}
+                            tone="neutro"
+                        />
+                        <TarjetaKpi
+                            label="Cartera por cobrar"
+                            value={formatoDinero(cobranza?.cartera_pendiente ?? 0)}
+                            hint={`${cobranza?.ordenes_abono_parcial ?? 0} con abono parcial`}
+                            icon={Wallet}
+                            tone="alerta"
                         />
                     </div>
-                </div>
 
-                {loading ? (
-                    <SkeletonDashboard />
-                ) : error ? (
-                    <div className="card-panel p-8 text-center">
-                        <AlertTriangle className="mx-auto text-rojoMarca mb-3" size={28} />
-                        <p className="text-rojoMarca font-medium text-base">{error}</p>
-                        <button type="button" onClick={recargar} className="btn-marca mt-5">
-                            Reintentar
-                        </button>
-                    </div>
-                ) : (
-                    <div className="space-y-6">
-                        {avisos.length > 0 && (
-                            <div className="card-panel p-4 border-rojoMarca/20 bg-red-50/70">
-                                <p className="font-semibold text-rojoMarca mb-1">Algunos indicadores no respondieron</p>
-                                <ul className="text-[15px] text-rojoMarca/90 list-disc pl-5 space-y-1">
-                                    {avisos.map((aviso) => <li key={aviso}>{aviso}</li>)}
-                                </ul>
-                            </div>
-                        )}
-
-                        {crecimiento && (
-                            <GrupoKpis title="Clientes" columns={2}>
-                                <MetricaKpi label="En el sistema" value={String(crecimiento.total_general ?? 0)} />
-                                <MetricaKpi
-                                    label="Nuevos en el período"
-                                    value={String(crecimiento.altas_periodo ?? clientes?.altas_periodo ?? 0)}
-                                    hint={clientes ? `${clientes.con_saldo_pendiente ?? 0} con saldo pendiente` : undefined}
-                                />
-                            </GrupoKpis>
-                        )}
-
-                        {resumen && (
-                            <>
-                                <GrupoKpis title="Finanzas" columns={3}>
-                                    <MetricaKpi
-                                        label="Cartera por cobrar"
-                                        value={formatoDinero(cobranza?.cartera_pendiente)}
-                                        hint={`${cobranza?.ordenes_abono_parcial ?? 0} con abono parcial`}
-                                        tone="alerta"
-                                    />
-                                    <MetricaKpi
-                                        label="Cobrado en el período"
-                                        value={formatoDinero(cobranza?.cobros_periodo?.total)}
-                                        hint={`${historialPagos?.meta?.total_movimientos ?? 0} movimientos`}
-                                        tone="ok"
-                                    />
-                                    <MetricaKpi
-                                        label="Facturado autorizado"
-                                        value={formatoDinero(ventas?.total_facturado_autorizado)}
-                                        hint={`${ventas?.facturas_autorizadas ?? 0} facturas SRI`}
-                                    />
-                                </GrupoKpis>
-
-                                <GrupoKpis title="Producción y entregas" columns={4}>
-                                    <MetricaKpi label="Órdenes nuevas" value={String(produccion?.ordenes_nuevas_periodo ?? 0)} />
-                                    <MetricaKpi
-                                        label="Entregas próximas"
-                                        value={String(produccion?.entregas_proximas ?? 0)}
-                                        hint="Próximos 7 días"
-                                    />
-                                    <MetricaKpi
-                                        label="Entregas atrasadas"
-                                        value={String(produccion?.entregas_atrasadas ?? 0)}
-                                        tone={(produccion?.entregas_atrasadas ?? 0) > 0 ? 'alerta' : 'ok'}
-                                    />
-                                    <MetricaKpi
-                                        label="Abonos en órdenes abiertas"
-                                        value={formatoDinero(cobranza?.cobrado_ordenes_abiertas)}
-                                    />
-                                </GrupoKpis>
-
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                                    <section className="card-panel p-5">
-                                        <h3 className="font-serif text-xl font-bold text-negro mb-4">Órdenes por estado</h3>
-                                        <BarrasHorizontales items={barrasEstados} />
-                                    </section>
-                                    <section className="card-panel p-5">
-                                        <h3 className="font-serif text-xl font-bold text-negro mb-4">Ventas por método de pago</h3>
-                                        <BarrasHorizontales items={barrasMetodos} emptyLabel="Sin facturas autorizadas en el período." />
-                                    </section>
-                                    <section className="card-panel p-5">
-                                        <h3 className="font-serif text-xl font-bold text-negro mb-4">Cobros por día</h3>
-                                        <BarrasHorizontales items={barrasCobros} emptyLabel="Sin cobros registrados en el período." />
-                                    </section>
-                                    <section className="card-panel p-5">
-                                        <h3 className="font-serif text-xl font-bold text-negro mb-4">Top por facturación</h3>
-                                        {(clientes?.top_por_facturacion || []).length === 0 ? (
-                                            <p className="text-[15px] text-gray-500">Sin facturación en el período.</p>
-                                        ) : (
-                                            <ul className="divide-y divide-negro/5">
-                                                {clientes.top_por_facturacion.map((item) => (
-                                                    <li key={item.cliente_id} className="py-3 flex justify-between gap-3 text-[15px]">
-                                                        <span className="font-medium text-negro">{item.nombre}</span>
-                                                        <span className="font-semibold tabular-nums">{formatoDinero(item.total)}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </section>
+                    <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+                        <section className="card-panel p-5 xl:col-span-3">
+                            <div className="flex items-start justify-between gap-3 mb-2">
+                                <div>
+                                    <h2 className="font-serif text-xl font-bold text-negro">Cobros del período</h2>
+                                    <p className="text-[14px] text-grisMarca mt-1">Evolución día a día</p>
                                 </div>
-                            </>
-                        )}
+                                <p className="text-[14px] font-semibold tabular-nums text-emerald-700">
+                                    {formatoDinero(cobranza?.cobros_periodo?.total ?? 0)}
+                                </p>
+                            </div>
+                            <GraficaLinea
+                                items={serieCobros}
+                                emptyLabel="Sin cobros registrados en el período."
+                                formatearValor={dineroCorto}
+                            />
+                        </section>
 
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                            <section className="card-panel p-5">
-                                <h3 className="font-serif text-xl font-bold text-negro mb-4">Altas de clientes</h3>
-                                <BarrasHorizontales items={barrasAltas} emptyLabel="Sin clientes nuevos en el período." />
-                            </section>
-                            <section className="card-panel p-5">
-                                <h3 className="font-serif text-xl font-bold text-negro mb-4">Últimos pagos</h3>
-                                {!historialPagos ? (
-                                    <p className="text-[15px] text-gray-500">Historial de pagos no disponible por ahora.</p>
-                                ) : pagosRecientes.length === 0 ? (
-                                    <p className="text-[15px] text-gray-500">Sin movimientos de pago en el período.</p>
-                                ) : (
-                                    <ul className="divide-y divide-negro/5">
-                                        {pagosRecientes.map((pago) => (
-                                            <li key={pago.id} className="py-3 flex justify-between gap-3 text-[15px]">
-                                                <div>
-                                                    <p className="font-medium text-negro">
-                                                        ORD-{String(pago.ordenes_pedido?.numero_orden ?? '—').padStart(4, '0')}
-                                                    </p>
-                                                    <p className="text-gray-500">
-                                                        {formatearFechaCorta(pago.fecha_pago)} · {pago.metodo_pago || 'Efectivo'}
-                                                    </p>
-                                                </div>
-                                                <span className="font-semibold tabular-nums text-green-700">{formatoDinero(pago.monto)}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </section>
-                        </div>
+                        <section className="card-panel p-5 xl:col-span-2">
+                            <h2 className="font-serif text-xl font-bold text-negro mb-1">Órdenes por estado</h2>
+                            <p className="text-[14px] text-grisMarca mb-4">Distribución actual del taller</p>
+                            <GraficaDonut
+                                items={donutEstados}
+                                emptyLabel="Sin órdenes para graficar."
+                                centroLabel="Órdenes"
+                            />
+                        </section>
                     </div>
-                )}
-            </section>
+
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                        <section className="card-panel p-5">
+                            <h2 className="font-serif text-xl font-bold text-negro mb-1">Métodos de pago</h2>
+                            <p className="text-[14px] text-grisMarca mb-4">
+                                Facturado autorizado: {formatoDinero(ventas?.total_facturado_autorizado ?? 0)}
+                            </p>
+                            <GraficaDonut
+                                items={donutMetodos}
+                                emptyLabel="Sin facturas autorizadas en el período."
+                                centroLabel="Total"
+                                formatearCentro={formatoDinero}
+                                formatearValor={formatoDinero}
+                            />
+                        </section>
+
+                        <section className="card-panel p-5">
+                            <h2 className="font-serif text-xl font-bold text-negro mb-1">Últimos pagos</h2>
+                            <p className="text-[14px] text-grisMarca mb-4">Movimientos más recientes</p>
+                            {!historialPagos ? (
+                                <p className="text-[15px] text-gray-500">Historial de pagos no disponible por ahora.</p>
+                            ) : pagosRecientes.length === 0 ? (
+                                <p className="text-[15px] text-gray-500">Sin movimientos de pago en el período.</p>
+                            ) : (
+                                <ul className="divide-y divide-negro/5">
+                                    {pagosRecientes.map((pago) => (
+                                        <li key={pago.id} className="py-3 flex justify-between gap-3 text-[15px]">
+                                            <div>
+                                                <p className="font-medium text-negro">
+                                                    ORD-{String(pago.ordenes_pedido?.numero_orden ?? '—').padStart(4, '0')}
+                                                </p>
+                                                <p className="text-gray-500">
+                                                    {formatearFechaCorta(pago.fecha_pago)} · {pago.metodo_pago || 'Efectivo'}
+                                                </p>
+                                            </div>
+                                            <span className="font-semibold tabular-nums text-emerald-700">
+                                                {formatoDinero(pago.monto)}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </section>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

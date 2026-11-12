@@ -52,31 +52,6 @@ export function SkeletonBloqueModal() {
     );
 }
 
-function SkeletonGrupoKpis({ columnas = 3 }) {
-    const cols = {
-        2: 'sm:grid-cols-2',
-        3: 'sm:grid-cols-2 xl:grid-cols-3',
-        4: 'sm:grid-cols-2 xl:grid-cols-4',
-    }[columnas] || 'sm:grid-cols-2 xl:grid-cols-3';
-
-    return (
-        <section className="card-panel overflow-hidden">
-            <div className="px-5 pt-5 pb-3 border-b border-negro/5">
-                <Skeleton className="h-6 w-36" />
-            </div>
-            <div className={`grid grid-cols-1 ${cols} gap-6 p-5`}>
-                {Array.from({ length: columnas }, (_, i) => (
-                    <div key={i} className="min-w-0 space-y-2">
-                        <Skeleton className="h-4 w-28" />
-                        <Skeleton className="h-8 w-24" />
-                        <Skeleton className="h-3 w-36" />
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-}
-
 function SkeletonPanelBarras() {
     return (
         <section className="card-panel p-5 space-y-4">
@@ -96,16 +71,26 @@ function SkeletonPanelBarras() {
 
 export function SkeletonDashboard() {
     return (
-        <div className="space-y-6" aria-busy="true">
+        <div className="space-y-5" aria-busy="true">
             <span className="sr-only" role="status" aria-label="Cargando indicadores" />
-            <SkeletonGrupoKpis columnas={2} />
-            <SkeletonGrupoKpis columnas={3} />
-            <SkeletonGrupoKpis columnas={4} />
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                <SkeletonPanelBarras />
-                <SkeletonPanelBarras />
-                <SkeletonPanelBarras />
-                <SkeletonPanelBarras />
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                {Array.from({ length: 4 }, (_, i) => (
+                    <div key={i} className="rounded-2xl bg-white border border-negro/5 p-5 space-y-3">
+                        <Skeleton className="h-10 w-10 rounded-xl" />
+                        <Skeleton className="h-4 w-28" />
+                        <Skeleton className="h-8 w-24" />
+                        <Skeleton className="h-3 w-32" />
+                    </div>
+                ))}
+            </div>
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+                <div className="xl:col-span-3">
+                    <SkeletonPanelBarras />
+                </div>
+                <div className="xl:col-span-2 card-panel p-5 space-y-4">
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-44 w-44 rounded-full mx-auto" />
+                </div>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 <SkeletonPanelBarras />
