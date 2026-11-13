@@ -88,7 +88,10 @@ function CeldaSkeleton({ variante, indice, etiqueta }) {
         return (
             <td className="p-4">
                 <div className="flex items-center justify-center gap-1">
-                    <Skeleton className="h-8 w-20 rounded-lg" />
+                    <div className="w-[6.75rem] shrink-0 mr-1">
+                        <Skeleton className="h-[2.125rem] w-full rounded-lg" />
+                    </div>
+                    <Skeleton className="h-8 w-8 rounded-lg" />
                     <Skeleton className="h-8 w-8 rounded-lg" />
                     <Skeleton className="h-8 w-8 rounded-lg" />
                     <Skeleton className="h-8 w-8 rounded-lg" />
@@ -100,29 +103,25 @@ function CeldaSkeleton({ variante, indice, etiqueta }) {
     if (variante === 'facturas') {
         if (indice === 0 || indice === 1) {
             return (
-                <td className="p-4 text-center">
-                    <div className="inline-flex flex-col items-center gap-2">
-                        <Skeleton className="h-4 w-28" />
-                        <Skeleton className="h-3.5 w-20" />
+                <td className="p-4 text-left">
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-28 max-w-full" />
+                        <Skeleton className="h-3.5 w-20 max-w-full" />
                     </div>
                 </td>
             );
         }
         if (indice === 2) {
             return (
-                <td className="p-4 text-center">
-                    <div className="inline-flex justify-center">
-                        <Skeleton className="h-4 w-24" />
-                    </div>
+                <td className="p-4 text-left">
+                    <Skeleton className="h-4 w-24 max-w-full" />
                 </td>
             );
         }
         if (indice === 3) {
             return (
-                <td className="p-4 text-center">
-                    <div className="inline-flex justify-center">
-                        <Skeleton className="h-7 w-24 rounded-full" />
-                    </div>
+                <td className="p-4 text-left">
+                    <Skeleton className="h-7 w-24 rounded-full" />
                 </td>
             );
         }

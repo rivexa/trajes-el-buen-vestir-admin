@@ -315,11 +315,19 @@ export default function Ordenes() {
                                     </td>
                                     <td className="p-4">
                                         <div className="flex items-center justify-center gap-1">
-                                            {orden.saldo > 0 && orden.estado !== 'Anulada' && (
-                                                <button onClick={() => handleAbrirPago(orden)} className="px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 rounded-lg text-[15px] font-medium transition flex items-center gap-1 mr-2">
-                                                    <DollarSign size={14} /> Abonar
-                                                </button>
-                                            )}
+                                            <div className="w-[6.75rem] shrink-0 mr-1 flex items-center">
+                                                {orden.saldo > 0 && orden.estado !== 'Anulada' ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleAbrirPago(orden)}
+                                                        className="w-full justify-center px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 rounded-lg text-[15px] font-medium transition inline-flex items-center gap-1"
+                                                    >
+                                                        <DollarSign size={14} /> Abonar
+                                                    </button>
+                                                ) : (
+                                                    <span className="block w-full h-[2.125rem]" aria-hidden="true" />
+                                                )}
+                                            </div>
 
                                             {orden.estado !== 'Anulada' && (
                                                 <button onClick={() => descargarPDFDirecto(orden)} disabled={descargandoPdf === orden.id} className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition" title="Descargar PDF">
