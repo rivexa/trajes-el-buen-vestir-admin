@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Receipt, Download } from 'lucide-react';
+import { fetchApi } from '../../lib/apiBase';
 import { SkeletonBloqueModal } from './Skeleton';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/facturacion`;
@@ -11,7 +12,7 @@ export default function ModalDetalleFactura({ isOpen, onClose, facturaId }) {
     useEffect(() => {
         if (isOpen && facturaId) {
             setLoading(true);
-            fetch(`${API_URL}/${facturaId}`)
+            fetchApi(`${API_URL}/${facturaId}`)
                 .then(res => res.json())
                 .then(data => setFactura(data))
                 .catch(err => console.error(err))

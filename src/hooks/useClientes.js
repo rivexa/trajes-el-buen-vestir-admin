@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { fetchApi } from '../lib/apiBase';
 import { mensajeErrorHttp, urlClientes } from '../lib/apiClientes';
 
 const LIMIT = 5;
@@ -24,7 +25,7 @@ export default function useClientes() {
         setError('');
         setLoading(true);
         try {
-            const response = await fetch(`${urlClientes()}?${params.toString()}`, { signal });
+            const response = await fetchApi(`${urlClientes()}?${params.toString()}`, { signal });
             if (!response.ok) {
                 throw new Error(await mensajeErrorHttp(response, 'No se pudo cargar el directorio de clientes.'));
             }
@@ -62,7 +63,7 @@ export default function useClientes() {
     };
 
     const eliminarCliente = async (id) => {
-        const response = await fetch(urlClientes(`/${id}`), { method: 'DELETE' });
+        const response = await fetchApi(urlClientes(`/${id}`), { method: 'DELETE' });
         if (!response.ok) {
             throw new Error(await mensajeErrorHttp(response, 'No se pudo eliminar el cliente.'));
         }

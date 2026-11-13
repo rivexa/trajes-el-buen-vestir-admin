@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Package, User, Calendar, CreditCard, FileText, CheckCircle, Clock } from 'lucide-react';
+import { fetchApi } from '../../lib/apiBase';
 import { SkeletonBloqueModal } from './Skeleton';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/ordenes`;
@@ -22,7 +23,7 @@ export default function ModalDetalleOrden({ isOpen, onClose, ordenId }) {
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`${API_URL}/${ordenId}`);
+            const response = await fetchApi(`${API_URL}/${ordenId}`);
             if (response.ok) {
                 const data = await response.json();
                 setOrden(data);

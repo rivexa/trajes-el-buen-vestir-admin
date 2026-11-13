@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, UserCheck, PackageOpen, DollarSign, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { fetchApi } from '../../lib/apiBase';
 import { SkeletonBloqueModal } from './Skeleton';
 
 const API_ORDENES = `${import.meta.env.VITE_API_URL}/ordenes`;
@@ -29,7 +30,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
         setCargandoOrden(true);
         setErrorOrden('');
         try {
-            const response = await fetch(`${API_ORDENES}/${ordenId}`);
+            const response = await fetchApi(`${API_ORDENES}/${ordenId}`);
             if (response.ok) {
                 const data = await response.json();
                 setCliente({ ...data.clientes, id: data.cliente_id });
@@ -127,7 +128,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                 detalles: detalles
             };
 
-            const response = await fetch(`${API_ORDENES}/${ordenId}/editar`, {
+            const response = await fetchApi(`${API_ORDENES}/${ordenId}/editar`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

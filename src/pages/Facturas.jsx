@@ -9,6 +9,7 @@ import ModalDetalleFactura from '../components/admin/ModalDetalleFactura';
 import ModalEliminar from '../components/admin/ModalEliminar';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { fetchApi } from '../lib/apiBase';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/facturacion`;
 const POLL_PROCESANDO_MS = 8_000;
@@ -32,7 +33,7 @@ export default function Facturas() {
     const fetchFacturas = useCallback(async ({ silent = false } = {}) => {
         if (!silent) setLoading(true);
         try {
-            const response = await fetch(`${API_URL}?page=${currentPage}&limit=${limit}&search=${searchTerm}`);
+            const response = await fetchApi(`${API_URL}?page=${currentPage}&limit=${limit}&search=${searchTerm}`);
             if (response.ok) {
                 const result = await response.json();
                 setFacturas(result.data);
@@ -60,7 +61,7 @@ export default function Facturas() {
     const handleReintentarSri = async (id) => {
         setProcesandoAccion(`retry-${id}`);
         try {
-            const response = await fetch(`${API_URL}/${id}/reintentar`, { method: 'POST' });
+            const response = await fetchApi(`${API_URL}/${id}/reintentar`, { method: 'POST' });
             if (response.ok) fetchFacturas({ silent: true });
             else alert('El SRI sigue sin responder. Intenta más tarde.');
         } catch (error) { console.error(error); } finally { setProcesandoAccion(null); }
@@ -70,7 +71,7 @@ export default function Facturas() {
         if (!facturaToAnular) return;
         setProcesandoAccion(`anular-${facturaToAnular.id}`);
         try {
-            const response = await fetch(`${API_URL}/${facturaToAnular.id}`, { method: 'DELETE' });
+            const response = await fetchApi(`${API_URL}/${facturaToAnular.id}`, { method: 'DELETE' });
             if (response.ok) {
                 setIsDeleteOpen(false);
                 fetchFacturas();
@@ -83,7 +84,7 @@ export default function Facturas() {
     const generarRIDE = async (facturaResumen) => {
         setProcesandoAccion(`pdf-${facturaResumen.id}`);
         try {
-            const response = await fetch(`${API_URL}/${facturaResumen.id}`);
+            const response = await fetchApi(`${API_URL}/${facturaResumen.id}`);
             const fac = await response.json();
             const doc = new jsPDF();
             const numFactura = `${fac.numero_factura_sri || fac.secuencial_local?.toString().padStart(9, '0')}`;

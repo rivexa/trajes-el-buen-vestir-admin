@@ -9,7 +9,7 @@ const campoOk = 'border-negro/10 focus:border-rojoMarca';
 const campoError = 'border-rojoMarca focus:border-rojoMarca bg-rojoMarca/[0.03]';
 
 export default function Login() {
-    const { login, isAuthenticated } = useAuth();
+    const { login, isAuthenticated, authListo } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const destino = location.state?.from || '/';
@@ -20,6 +20,14 @@ export default function Login() {
     const [erroresCampo, setErroresCampo] = useState({ usuario: '', password: '' });
     const [errorFormulario, setErrorFormulario] = useState('');
     const [enviando, setEnviando] = useState(false);
+
+    if (!authListo) {
+        return (
+            <div className="min-h-screen bg-plomoSuave flex items-center justify-center">
+                <p className="text-grisMarca text-base" role="status">Validando sesión...</p>
+            </div>
+        );
+    }
 
     if (isAuthenticated) {
         return <Navigate to={destino} replace />;

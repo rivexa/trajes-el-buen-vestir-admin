@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Search, Plus, Trash2, Receipt, UserCheck, Package, ShoppingCart, ChevronDown, ChevronUp, Loader2, UserPlus } from 'lucide-react';
+import { fetchApi } from '../../lib/apiBase';
 import { Skeleton } from './Skeleton';
 
 const API_CLIENTES = `${import.meta.env.VITE_API_URL}/clientes`;
@@ -48,12 +49,12 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
         setMostrarFormCliente(false); setOrigenFacturacion(null); setDetalles([]); setOrdenId('');
 
         try {
-            const resCliente = await fetch(`${API_CLIENTES}/buscar/${cedulaBusqueda}`);
+            const resCliente = await fetchApi(`${API_CLIENTES}/buscar/${cedulaBusqueda}`);
             if (resCliente.ok) {
                 const dataCliente = await resCliente.json();
                 setCliente(dataCliente);
 
-                const resOrdenes = await fetch(`${API_ORDENES}?search=${dataCliente.cedula_ruc}&limit=20`);
+                const resOrdenes = await fetchApi(`${API_ORDENES}?search=${dataCliente.cedula_ruc}&limit=20`);
                 if (resOrdenes.ok) {
                     const dataOrdenes = await resOrdenes.json();
                     setOrdenesPendientes(dataOrdenes.data.filter(o => !o.factura_id && o.estado !== 'Anulada'));
@@ -73,7 +74,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
         e.preventDefault();
         setCreandoCliente(true); setError('');
         try {
-            const res = await fetch(API_CLIENTES, {
+            const res = await fetchApi(API_CLIENTES, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datosNuevoCliente)
@@ -98,7 +99,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
         if (ordenExpandida === id) return setOrdenExpandida(null);
         if (!detallesCargados[id]) {
             try {
-                const res = await fetch(`${API_ORDENES}/${id}`);
+                const res = await fetchApi(`${API_ORDENES}/${id}`);
                 const data = await res.json();
                 setDetallesCargados(prev => ({ ...prev, [id]: data.orden_detalles }));
             } catch (err) { console.error(err); }
@@ -110,7 +111,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
         setOrdenId(id); setError('');
         if (!detallesCargados[id]) {
             try {
-                const res = await fetch(`${API_ORDENES}/${id}`);
+                const res = await fetchApi(`${API_ORDENES}/${id}`);
                 const data = await res.json();
                 setDetallesCargados(prev => ({ ...prev, [id]: data.orden_detalles }));
                 setDetalles(data.orden_detalles.map(d => ({ descripcion: d.descripcion, cantidad: d.cantidad, precio_unitario: d.precio_unitario })));
@@ -142,7 +143,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                 detalles: detalles
             };
 
-            const response = await fetch(`${API_FACTURAS}/emitir`, {
+            const response = await fetchApi(`${API_FACTURAS}/emitir`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

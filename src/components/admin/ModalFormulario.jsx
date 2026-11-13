@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { User, X } from 'lucide-react';
 import useEscapeKey from '../../hooks/useEscapeKey';
+import { fetchApi } from '../../lib/apiBase';
 import { mensajeErrorHttp, urlClientes } from '../../lib/apiClientes';
 import { camposFormulario, mensajeValidacionCliente, payloadCambios } from '../../utils/validacionCliente';
 
@@ -56,7 +57,7 @@ function FormularioCliente({ clienteEdicion, onClose, onSubmitSuccess }) {
                 }
             }
 
-            const response = await fetch(url, {
+            const response = await fetchApi(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),

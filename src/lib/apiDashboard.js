@@ -1,4 +1,4 @@
-import { mensajeErrorHttp, urlApi } from './apiBase';
+import { fetchApi, mensajeErrorHttp, urlApi } from './apiBase';
 
 function conPeriodo(path, { desde, hasta } = {}) {
     const params = new URLSearchParams();
@@ -9,7 +9,7 @@ function conPeriodo(path, { desde, hasta } = {}) {
 }
 
 export async function fetchDashboard({ desde, hasta, signal } = {}) {
-    const response = await fetch(urlApi(conPeriodo('/dashboard', { desde, hasta })), { signal });
+    const response = await fetchApi(urlApi(conPeriodo('/dashboard', { desde, hasta })), { signal });
     if (!response.ok) {
         throw new Error(await mensajeErrorHttp(response, 'No se pudo cargar el dashboard.'));
     }
@@ -17,7 +17,7 @@ export async function fetchDashboard({ desde, hasta, signal } = {}) {
 }
 
 export async function fetchCrecimientoClientes({ desde, hasta, signal } = {}) {
-    const response = await fetch(urlApi(conPeriodo('/clientes/crecimiento', { desde, hasta })), { signal });
+    const response = await fetchApi(urlApi(conPeriodo('/clientes/crecimiento', { desde, hasta })), { signal });
     if (!response.ok) {
         throw new Error(await mensajeErrorHttp(response, 'No se pudo cargar el crecimiento de clientes.'));
     }
@@ -25,7 +25,7 @@ export async function fetchCrecimientoClientes({ desde, hasta, signal } = {}) {
 }
 
 export async function fetchHistorialPagos({ desde, hasta, signal } = {}) {
-    const response = await fetch(urlApi(conPeriodo('/ordenes/pagos/historial', { desde, hasta })), { signal });
+    const response = await fetchApi(urlApi(conPeriodo('/ordenes/pagos/historial', { desde, hasta })), { signal });
     if (!response.ok) {
         throw new Error(await mensajeErrorHttp(response, 'No se pudo cargar el historial de pagos.'));
     }

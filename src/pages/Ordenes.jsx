@@ -11,6 +11,7 @@ import ModalNuevaOrden from '../components/admin/ModalNuevaOrden';
 import ModalDetalleOrden from '../components/admin/ModalDetalleOrden';
 import ModalEditarOrden from '../components/admin/ModalEditarOrden';
 import ModalEliminar from '../components/admin/ModalEliminar';
+import { fetchApi } from '../lib/apiBase';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/ordenes`;
 
@@ -41,7 +42,7 @@ export default function Ordenes() {
     const fetchOrdenes = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_URL}?page=${currentPage}&limit=${limit}&search=${searchTerm}`);
+            const response = await fetchApi(`${API_URL}?page=${currentPage}&limit=${limit}&search=${searchTerm}`);
             if (response.ok) {
                 const result = await response.json();
                 setOrdenes(result.data);
@@ -70,7 +71,7 @@ export default function Ordenes() {
 
     const handleDeleteConfirm = async () => {
         try {
-            const response = await fetch(`${API_URL}/${ordenToDelete.id}`, { method: 'DELETE' });
+            const response = await fetchApi(`${API_URL}/${ordenToDelete.id}`, { method: 'DELETE' });
             if (response.ok) {
                 setIsDeleteOpen(false);
                 // Si era el único registro de la página y no es la primera, retrocede
@@ -87,7 +88,7 @@ export default function Ordenes() {
 
     const handleCambiarEstadoLista = async (id, nuevoEstado) => {
         try {
-            const response = await fetch(`${API_URL}/${id}/estado`, {
+            const response = await fetchApi(`${API_URL}/${id}/estado`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ estado: nuevoEstado })
@@ -105,7 +106,7 @@ export default function Ordenes() {
     const descargarPDFDirecto = async (ordenResumen) => {
         setDescargandoPdf(ordenResumen.id);
         try {
-            const response = await fetch(`${API_URL}/${ordenResumen.id}`);
+            const response = await fetchApi(`${API_URL}/${ordenResumen.id}`);
             const ordenFull = await response.json();
 
             const doc = new jsPDF();
