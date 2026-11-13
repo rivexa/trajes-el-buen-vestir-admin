@@ -50,7 +50,7 @@ export default function ModalEliminar({
                     )}
                 </div>
                 <div className="modal-pie">
-                    <button type="button" onClick={onClose} className="flex-1 py-3 bg-white text-negro font-medium rounded-xl hover:bg-grisClaro transition border border-negro/10">
+                    <button type="button" onClick={onClose} className="flex-1 py-3 bg-white text-negro font-medium rounded-xl hover:bg-plomoSuave transition border border-negro/10">
                         Cancelar
                     </button>
                     <button

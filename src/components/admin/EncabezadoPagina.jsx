@@ -6,7 +6,7 @@ export default function EncabezadoPagina({ icon: Icon, title, subtitle, actionLa
             <div className="h-1 bg-rojoMarca" />
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 p-6 md:p-7">
                 <div className="flex items-center gap-4 md:gap-5">
-                    <div className="bg-negro text-white p-3 rounded-xl">
+                    <div className="bg-plomoSuave text-negro p-3 rounded-xl">
                         <Icon size={28} strokeWidth={1.75} />
                     </div>
                     <div>

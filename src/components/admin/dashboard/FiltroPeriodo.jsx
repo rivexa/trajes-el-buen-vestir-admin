@@ -88,7 +88,7 @@ export default function FiltroPeriodo({
                                     className={`px-2.5 py-1.5 rounded-full text-[13px] font-semibold transition ${
                                         presetId === opcion.id
                                             ? 'bg-rojoMarca text-white'
-                                            : 'bg-grisClaro text-negro hover:bg-negro/10'
+                                            : 'bg-plomoSuave text-negro hover:bg-negro/10'
                                     }`}
                                 >
                                     {opcion.label}

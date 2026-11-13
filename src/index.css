@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply bg-grisClaro text-negro text-base font-sans antialiased;
+    @apply bg-white text-negro text-base font-sans antialiased;
   }
 }
 
@@ -20,7 +20,7 @@
   }
 
   .card-panel {
-    @apply bg-white rounded-2xl border border-negro/5 shadow-panel;
+    @apply bg-white rounded-2xl border border-negro/[0.04] shadow-panel;
   }
 
   .btn-marca {
@@ -28,7 +28,7 @@
   }
 
   .btn-icono {
-    @apply p-2 rounded-lg text-grisMarca hover:bg-grisClaro hover:text-negro transition;
+    @apply p-2 rounded-lg text-grisMarca hover:bg-plomoSuave hover:text-negro transition;
   }
 
   .btn-icono-peligro {
@@ -36,11 +36,15 @@
   }
 
   .thead-marca {
-    @apply bg-negro text-white text-sm uppercase tracking-[0.08em];
+    @apply bg-plomoSuave text-grisMarca text-sm uppercase tracking-[0.08em];
   }
 
   .thead-marca th {
     @apply p-4 font-semibold whitespace-nowrap;
+  }
+
+  .fila-tabla {
+    @apply transition-colors hover:bg-plomoSuave/70;
   }
 
   .modal-panel {
@@ -48,11 +52,11 @@
   }
 
   .modal-cabecera {
-    @apply flex justify-between items-center p-6 border-b border-negro/5 bg-grisClaro/60 shrink-0;
+    @apply flex justify-between items-center p-6 border-b border-negro/5 bg-plomoSuave/70 shrink-0;
   }
 
   .modal-pie {
-    @apply flex gap-3 p-6 border-t border-negro/5 bg-grisClaro/60 shrink-0;
+    @apply flex gap-3 p-6 border-t border-negro/5 bg-plomoSuave/70 shrink-0;
   }
 
   .seccion-modal {

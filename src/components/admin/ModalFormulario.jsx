@@ -128,7 +128,7 @@ function FormularioCliente({ clienteEdicion, onClose, onSubmitSuccess }) {
                         </div>
                     </div>
                     <div className="flex justify-end gap-3 pt-4 border-t border-negro/5">
-                        <button type="button" onClick={onClose} className="px-6 py-3 text-negro font-medium hover:bg-grisClaro rounded-xl transition border border-negro/10">Cancelar</button>
+                        <button type="button" onClick={onClose} className="px-6 py-3 text-negro font-medium hover:bg-plomoSuave rounded-xl transition border border-negro/10">Cancelar</button>
                         <button type="submit" disabled={guardando} className="btn-marca disabled:opacity-50">
                             {guardando ? 'Guardando...' : clienteEdicion ? 'Actualizar Datos' : 'Guardar Cliente'}
                         </button>

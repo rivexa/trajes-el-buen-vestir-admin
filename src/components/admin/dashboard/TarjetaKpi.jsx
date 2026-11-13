@@ -39,7 +39,7 @@ export default function TarjetaKpi({
         label: 'text-grisMarca/80',
         value: 'text-negro',
         hint: 'text-grisMarca/70',
-        icon: 'bg-grisClaro text-negro',
+        icon: 'bg-plomoSuave text-negro',
     };
 
     return (

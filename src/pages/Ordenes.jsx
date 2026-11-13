@@ -259,7 +259,7 @@ export default function Ordenes() {
                             ) : ordenes.length === 0 ? (
                                 <tr><td colSpan="5" className="p-12 text-center text-gray-500 font-medium">No se encontraron órdenes.</td></tr>
                             ) : ordenes.map((orden) => (
-                                <tr key={orden.id} className={`transition-colors ${orden.estado === 'Anulada' ? 'bg-red-50/50 opacity-60 grayscale' : 'hover:bg-grisClaro/70'}`}>
+                                <tr key={orden.id} className={`${orden.estado === 'Anulada' ? 'bg-red-50/50 opacity-60 grayscale' : 'fila-tabla'}`}>
                                     <td className="p-4">
                                         <div className={`font-bold ${orden.estado === 'Anulada' ? 'text-gray-500 line-through' : 'text-negro'}`}>
                                             ORD-{orden.numero_orden.toString().padStart(4, '0')}
