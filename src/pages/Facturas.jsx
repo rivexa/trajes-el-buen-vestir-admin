@@ -179,7 +179,7 @@ export default function Facturas() {
                             ) : facturas.length === 0 ? (
                                 <tr><td colSpan="7" className="p-12 text-center text-gray-500 font-medium">No se encontraron facturas.</td></tr>
                             ) : facturas.map((fac) => (
-                                <tr key={fac.id} className={`transition-colors ${fac.estado_sri === 'ANULADA' ? 'bg-red-50/50 grayscale opacity-70' : 'hover:bg-grisClaro/70'}`}>
+                                <tr key={fac.id} className={`${fac.estado_sri === 'ANULADA' ? 'bg-red-50/50 grayscale opacity-70' : 'fila-tabla'}`}>
                                     <td className="p-4 text-center font-bold text-negro">
                                         {fac.estado_sri === 'ANULADA' ? <span className="line-through text-gray-400">FAC-{fac.secuencial_local?.toString().padStart(5, '0')}</span> : `FAC-${fac.secuencial_local?.toString().padStart(5, '0')}`}
                                         <div className="text-[15px] text-gray-500 font-normal mt-1">{new Date(fac.fecha_emision).toLocaleDateString()}</div>

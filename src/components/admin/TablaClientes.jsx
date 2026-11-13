@@ -39,10 +39,10 @@ export default function TablaClientes({
                             </tr>
                         ) : (
                             clientes.map((cliente) => (
-                                <tr key={cliente.id} className="hover:bg-grisClaro/70 transition-colors">
+                                <tr key={cliente.id} className="fila-tabla">
                                     <td className="p-4">
                                         <div className="flex items-center gap-3">
-                                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-negro text-[13px] font-semibold tracking-wide text-white">
+                                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-plomoSuave text-[13px] font-semibold tracking-wide text-grisMarca">
                                                 {iniciales(cliente.nombres, cliente.apellidos)}
                                             </span>
                                             <div>
