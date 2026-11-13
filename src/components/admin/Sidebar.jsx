@@ -1,5 +1,6 @@
-import { FileText, Home, Menu, Receipt, Users, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { FileText, Home, LogOut, Menu, Receipt, Users, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext';
 
 const LINKS = [
     { to: '/', label: 'Inicio', icon: Home },
@@ -10,7 +11,15 @@ const LINKS = [
 
 export function Sidebar({ isOpen, setIsOpen }) {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { usuario, logout } = useAuth();
     const closeMenu = () => setIsOpen(false);
+
+    const handleLogout = () => {
+        logout();
+        closeMenu();
+        navigate('/login', { replace: true });
+    };
 
     return (
         <>
@@ -59,9 +68,20 @@ export function Sidebar({ isOpen, setIsOpen }) {
                     })}
                 </nav>
 
-                <div className="px-6 py-5 border-t border-negro/5">
-                    <p className="font-serif text-lg text-negro">Distinción y elegancia</p>
-                    <p className="text-base text-grisMarca mt-1">Uso exclusivo del personal</p>
+                <div className="px-4 py-5 border-t border-negro/5 space-y-3">
+                    {usuario?.nombre ? (
+                        <p className="px-2 text-[15px] text-grisMarca truncate" title={usuario.nombre}>
+                            {usuario.nombre}
+                        </p>
+                    ) : null}
+                    <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-lg text-grisMarca hover:bg-white/70 hover:text-negro transition-colors"
+                    >
+                        <LogOut size={20} strokeWidth={1.75} />
+                        Cerrar sesión
+                    </button>
                 </div>
             </aside>
         </>
