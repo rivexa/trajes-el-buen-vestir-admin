@@ -8,33 +8,43 @@ export function Skeleton({ className = '' }) {
     );
 }
 
-function CeldaSkeleton({ variante, indice }) {
-    if (variante === 'clientes' && indice === 0) {
-        return (
-            <td className="p-4">
-                <div className="flex items-center gap-3">
-                    <Skeleton className="h-11 w-11 rounded-full shrink-0" />
-                    <div className="min-w-0 space-y-2">
-                        <Skeleton className="h-4 w-36 max-w-full" />
-                        <Skeleton className="h-3.5 w-28 max-w-full" />
+function CeldaSkeleton({ variante, indice, etiqueta }) {
+    const anuncio = etiqueta ? (
+        <span className="sr-only" role="status" aria-label={etiqueta} />
+    ) : null;
+
+    if (variante === 'clientes') {
+        if (indice === 0) {
+            return (
+                <td className="p-4">
+                    {anuncio}
+                    <div className="flex items-center gap-3">
+                        <Skeleton className="h-11 w-11 rounded-full shrink-0" />
+                        <div className="min-w-0 space-y-2">
+                            <Skeleton className="h-4 w-36 max-w-full" />
+                            <Skeleton className="h-3.5 w-28 max-w-full" />
+                        </div>
                     </div>
-                </div>
-            </td>
-        );
-    }
-
-    if (variante === 'clientes' && indice === 2) {
-        return (
-            <td className="p-4">
-                <div className="space-y-2">
-                    <Skeleton className="h-3.5 w-28 max-w-full" />
-                    <Skeleton className="h-3.5 w-36 max-w-full" />
-                </div>
-            </td>
-        );
-    }
-
-    if (variante === 'clientes' && indice === 3) {
+                </td>
+            );
+        }
+        if (indice === 1) {
+            return (
+                <td className="p-4">
+                    <Skeleton className="h-4 w-28 max-w-full" />
+                </td>
+            );
+        }
+        if (indice === 2) {
+            return (
+                <td className="p-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-3.5 w-28 max-w-full" />
+                        <Skeleton className="h-3.5 w-36 max-w-full" />
+                    </div>
+                </td>
+            );
+        }
         return (
             <td className="p-4">
                 <div className="flex items-center justify-center gap-1">
@@ -45,23 +55,102 @@ function CeldaSkeleton({ variante, indice }) {
         );
     }
 
-    if ((variante === 'ordenes' || variante === 'facturas') && indice === 0) {
+    if (variante === 'ordenes') {
+        if (indice === 0 || indice === 1) {
+            return (
+                <td className="p-4 text-left">
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-28 max-w-full" />
+                        <Skeleton className="h-3.5 w-24 max-w-full" />
+                    </div>
+                </td>
+            );
+        }
+        if (indice === 2) {
+            return (
+                <td className="p-4">
+                    <div className="mx-auto w-32 space-y-2">
+                        <Skeleton className="h-3.5 w-full" />
+                        <Skeleton className="h-3.5 w-full" />
+                    </div>
+                </td>
+            );
+        }
+        if (indice === 3) {
+            return (
+                <td className="p-4">
+                    <div className="flex justify-center">
+                        <Skeleton className="h-11 w-[14rem] rounded-xl" />
+                    </div>
+                </td>
+            );
+        }
         return (
             <td className="p-4">
-                <div className="space-y-2">
-                    <Skeleton className="h-4 w-24 max-w-full" />
-                    <Skeleton className="h-3.5 w-20 max-w-full" />
+                <div className="flex items-center justify-center gap-1">
+                    <Skeleton className="h-8 w-20 rounded-lg" />
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                    <Skeleton className="h-8 w-8 rounded-lg" />
                 </div>
             </td>
         );
     }
 
-    if ((variante === 'ordenes' || variante === 'facturas') && indice === 1) {
+    if (variante === 'facturas') {
+        if (indice === 0 || indice === 1) {
+            return (
+                <td className="p-4 text-center">
+                    <div className="inline-flex flex-col items-center gap-2">
+                        <Skeleton className="h-4 w-28" />
+                        <Skeleton className="h-3.5 w-20" />
+                    </div>
+                </td>
+            );
+        }
+        if (indice === 2) {
+            return (
+                <td className="p-4 text-center">
+                    <div className="inline-flex justify-center">
+                        <Skeleton className="h-4 w-24" />
+                    </div>
+                </td>
+            );
+        }
+        if (indice === 3) {
+            return (
+                <td className="p-4 text-center">
+                    <div className="inline-flex justify-center">
+                        <Skeleton className="h-7 w-24 rounded-full" />
+                    </div>
+                </td>
+            );
+        }
+        if (indice === 4) {
+            return (
+                <td className="p-4 text-center">
+                    <div className="mx-auto w-28 space-y-2">
+                        <Skeleton className="h-3.5 w-full" />
+                        <Skeleton className="h-3.5 w-full" />
+                    </div>
+                </td>
+            );
+        }
+        if (indice === 5) {
+            return (
+                <td className="p-4 text-center">
+                    <div className="inline-flex justify-center">
+                        <Skeleton className="h-8 w-24 rounded-lg" />
+                    </div>
+                </td>
+            );
+        }
         return (
-            <td className="p-4">
-                <div className="space-y-2">
-                    <Skeleton className="h-4 w-32 max-w-full" />
-                    <Skeleton className="h-3.5 w-24 max-w-full" />
+            <td className="p-4 text-center">
+                <div className="flex items-center justify-center gap-1">
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                    <Skeleton className="h-8 w-8 rounded-lg" />
                 </div>
             </td>
         );
@@ -69,7 +158,7 @@ function CeldaSkeleton({ variante, indice }) {
 
     return (
         <td className="p-4">
-            <Skeleton className="h-4 w-24 max-w-full mx-auto" />
+            <Skeleton className="h-4 w-24 max-w-full" />
         </td>
     );
 }
@@ -82,15 +171,15 @@ export function FilasSkeletonTabla({
 }) {
     return (
         <>
-            <tr className="border-0">
-                <td colSpan={celdas} className="p-0 border-0">
-                    <span className="sr-only" role="status" aria-label={etiqueta} />
-                </td>
-            </tr>
             {Array.from({ length: filas }, (_, fila) => (
-                <tr key={fila}>
+                <tr key={fila} aria-label={fila === 0 ? etiqueta : undefined}>
                     {Array.from({ length: celdas }, (_, celda) => (
-                        <CeldaSkeleton key={celda} variante={variante} indice={celda} />
+                        <CeldaSkeleton
+                            key={celda}
+                            variante={variante}
+                            indice={celda}
+                            etiqueta={fila === 0 && celda === 0 ? etiqueta : undefined}
+                        />
                     ))}
                 </tr>
             ))}

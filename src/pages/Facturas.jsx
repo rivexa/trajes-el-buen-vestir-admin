@@ -161,16 +161,25 @@ export default function Facturas() {
 
             <div className="card-panel flex flex-col flex-1 overflow-hidden">
                 <div className="overflow-x-auto flex-1">
-                    <table className="min-w-[1040px] w-full text-left text-base">
+                    <table className="min-w-[1040px] w-full table-fixed text-left text-base">
+                        <colgroup>
+                            <col className="w-[14%]" />
+                            <col className="w-[18%]" />
+                            <col className="w-[12%]" />
+                            <col className="w-[12%]" />
+                            <col className="w-[14%]" />
+                            <col className="w-[14%]" />
+                            <col className="w-[16%]" />
+                        </colgroup>
                         <thead className="thead-marca">
                             <tr>
-                                <th>N° Factura</th>
-                                <th>Cliente</th>
-                                <th>Orden</th>
-                                <th>Método Pago</th>
+                                <th className="text-center">N° Factura</th>
+                                <th className="text-center">Cliente</th>
+                                <th className="text-center">Orden</th>
+                                <th className="text-center">Método Pago</th>
                                 <th className="text-center">Finanzas</th>
                                 <th className="text-center">Estado SRI</th>
-                                <th className="text-center min-w-[7.5rem]">Acciones</th>
+                                <th className="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-negro/5">
