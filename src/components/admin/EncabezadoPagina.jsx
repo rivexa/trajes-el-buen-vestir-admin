@@ -18,7 +18,7 @@ export default function EncabezadoPagina({ icon: Icon, title, subtitle, actionLa
                     </div>
                 </div>
                 {actionLabel && (
-                    <button type="button" onClick={onAction} className="btn-marca">
+                    <button type="button" onClick={onAction} className="btn-marca md:min-w-[11.5rem] justify-center shrink-0">
                         <Plus size={18} /> {actionLabel}
                     </button>
                 )}
