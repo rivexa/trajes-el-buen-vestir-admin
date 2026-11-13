@@ -36,7 +36,6 @@ export function Sidebar({ isOpen, setIsOpen }) {
                             className="w-full h-auto object-contain"
                         />
                     </Link>
-                    <p className="mt-3 text-lg font-medium tracking-wide text-grisMarca">Panel interno</p>
                 </div>
 
                 <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
