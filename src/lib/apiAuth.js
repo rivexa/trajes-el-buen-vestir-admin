@@ -1,13 +1,11 @@
+import { mensajeErrorHttp, urlApi } from './apiBase';
+
 /**
  * Login de personal del taller.
- * Hoy: mock local para armar el frontend.
- * Luego: POST /auth/login en el backend Nest (ver comentarios).
- *
- * Contrato esperado del backend:
  * POST /auth/login
- * body: { usuario: string, password: string }
- * 200: { access_token: string, token_type?: 'Bearer', user: { id, nombre, rol } }
- * 401: { message: string }
+ * body: { usuario, password }
+ * 200: { access_token, token_type, user: { id, nombre, rol } }
+ * 401: { message }
  */
 export async function loginConCredenciales({ usuario, password }) {
     const usuarioLimpio = String(usuario || '').trim();
@@ -17,27 +15,15 @@ export async function loginConCredenciales({ usuario, password }) {
         throw new Error('Ingresa usuario y contraseña.');
     }
 
-    // --- Conexión real (activar cuando exista el backend) ---
-    // import { mensajeErrorHttp, urlApi } from './apiBase';
-    // const response = await fetch(urlApi('/auth/login'), {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ usuario: usuarioLimpio, password: clave }),
-    // });
-    // if (!response.ok) {
-    //     throw new Error(await mensajeErrorHttp(response, 'No se pudo iniciar sesión.'));
-    // }
-    // return response.json();
+    const response = await fetch(urlApi('/auth/login'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario: usuarioLimpio, password: clave }),
+    });
 
-    await new Promise((resolve) => setTimeout(resolve, 450));
+    if (!response.ok) {
+        throw new Error(await mensajeErrorHttp(response, 'No se pudo iniciar sesión.'));
+    }
 
-    return {
-        access_token: `mock.${btoa(unescape(encodeURIComponent(usuarioLimpio)))}.local`,
-        token_type: 'Bearer',
-        user: {
-            id: 'usuario-local',
-            nombre: usuarioLimpio,
-            rol: 'admin',
-        },
-    };
+    return response.json();
 }

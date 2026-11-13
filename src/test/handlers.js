@@ -13,6 +13,25 @@ export const CLIENTE_DEMO = {
 const API = 'http://api.test/clientes';
 const API_BASE = 'http://api.test';
 
+async function loginHandler({ request }) {
+    const body = await request.json().catch(() => ({}));
+    const usuario = String(body?.usuario || '').trim();
+    const password = String(body?.password || '');
+
+    if (usuario === 'admin' && password === 'Admin123!') {
+        return HttpResponse.json({
+            access_token: 'test-jwt-token',
+            token_type: 'Bearer',
+            user: { id: 'usuario-admin', nombre: 'Administrador', rol: 'admin' },
+        });
+    }
+
+    return HttpResponse.json(
+        { message: 'Usuario o contraseña incorrectos.' },
+        { status: 401 },
+    );
+}
+
 const DASHBOARD_DEMO = {
     meta: { desde: '2026-03-01', hasta: '2026-03-14', hoy: '2026-03-14' },
     produccion: {
@@ -57,6 +76,7 @@ const DASHBOARD_DEMO = {
 };
 
 export const handlers = [
+    http.post(`${API_BASE}/auth/login`, loginHandler),
     http.get(`${API_BASE}/dashboard`, () => HttpResponse.json(DASHBOARD_DEMO)),
     http.get(`${API}/crecimiento`, () => HttpResponse.json({
         total_general: 40,
