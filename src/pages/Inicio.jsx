@@ -66,7 +66,7 @@ export default function Inicio() {
         <div className="pagina-admin">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="font-serif text-3xl font-bold text-negro">Resumen del taller</h1>
+                    <h1 className="font-serif text-3xl font-bold text-negro">Vista general</h1>
                     <p className="mt-1 text-[15px] text-grisMarca">
                         Visión rápida de cobros, órdenes y clientes
                     </p>
