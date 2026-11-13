@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DollarSign, X } from 'lucide-react';
+import { fetchApi } from '../../lib/apiBase';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/ordenes`;
 const METODOS = ['Efectivo', 'Transferencia', 'Tarjeta de Crédito', 'Tarjeta de Débito'];
@@ -35,7 +36,7 @@ export default function ModalPago({ isOpen, onClose, orden, onSuccess }) {
 
         setLoading(true);
         try {
-            const response = await fetch(`${API_URL}/${orden.id}/pago`, {
+            const response = await fetchApi(`${API_URL}/${orden.id}/pago`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

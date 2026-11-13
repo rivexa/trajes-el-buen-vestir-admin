@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Search, Plus, Trash2, UserCheck, PackagePlus, DollarSign, Image as ImageIcon, Loader2, UserPlus } from 'lucide-react';
+import { fetchApi } from '../../lib/apiBase';
 
 const API_CLIENTES = `${import.meta.env.VITE_API_URL}/clientes`;
 const API_ORDENES = `${import.meta.env.VITE_API_URL}/ordenes`;
@@ -42,7 +43,7 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
         setBuscandoCliente(true); setError(''); setCliente(null); setMostrarFormCliente(false);
 
         try {
-            const response = await fetch(`${API_CLIENTES}/buscar/${cedulaBusqueda}`);
+            const response = await fetchApi(`${API_CLIENTES}/buscar/${cedulaBusqueda}`);
             if (response.ok) {
                 const data = await response.json();
                 setCliente(data);
@@ -61,7 +62,7 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
         e.preventDefault();
         setCreandoCliente(true); setError('');
         try {
-            const res = await fetch(API_CLIENTES, {
+            const res = await fetchApi(API_CLIENTES, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datosNuevoCliente)
@@ -121,7 +122,7 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
         setGuardando(true); setError('');
         try {
             const payload = { cliente_id: cliente.id, fecha_entrega_estimada: fechaEntrega || undefined, abono: parseFloat(abono) || 0, detalles };
-            const response = await fetch(`${API_ORDENES}/nueva`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const response = await fetchApi(`${API_ORDENES}/nueva`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
 
             if (response.ok) { onSuccess(); handleClose(); } 
             else {

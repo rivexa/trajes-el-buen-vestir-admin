@@ -77,6 +77,18 @@ const DASHBOARD_DEMO = {
 
 export const handlers = [
     http.post(`${API_BASE}/auth/login`, loginHandler),
+    http.get(`${API_BASE}/auth/me`, ({ request }) => {
+        const auth = request.headers.get('Authorization') || '';
+        if (!auth.startsWith('Bearer ')) {
+            return HttpResponse.json({ message: 'No autorizado.' }, { status: 401 });
+        }
+        return HttpResponse.json({
+            id: 'usuario-admin',
+            usuario: 'admin',
+            nombre: 'Administrador',
+            rol: 'admin',
+        });
+    }),
     http.get(`${API_BASE}/dashboard`, () => HttpResponse.json(DASHBOARD_DEMO)),
     http.get(`${API}/crecimiento`, () => HttpResponse.json({
         total_general: 40,
