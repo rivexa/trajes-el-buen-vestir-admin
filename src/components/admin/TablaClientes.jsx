@@ -27,7 +27,7 @@ export default function TablaClientes({
                     </thead>
                     <tbody className="divide-y divide-negro/5 text-base text-grisMarca">
                         {loading ? (
-                            <FilasSkeletonTabla filas={6} celdas={4} etiqueta="Cargando clientes" />
+                            <FilasSkeletonTabla filas={5} celdas={4} variante="clientes" etiqueta="Cargando clientes" />
                         ) : error ? (
                             <tr><td colSpan="4" className="p-12 text-center text-rojoMarca font-medium">{error}</td></tr>
                         ) : clientes.length === 0 ? (

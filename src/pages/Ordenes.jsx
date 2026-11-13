@@ -255,7 +255,7 @@ export default function Ordenes() {
                         </thead>
                         <tbody className="divide-y divide-negro/5">
                             {loading ? (
-                                <FilasSkeletonTabla filas={6} celdas={5} etiqueta="Cargando órdenes" />
+                                <FilasSkeletonTabla filas={5} celdas={5} variante="ordenes" etiqueta="Cargando órdenes" />
                             ) : ordenes.length === 0 ? (
                                 <tr><td colSpan="5" className="p-12 text-center text-gray-500 font-medium">No se encontraron órdenes.</td></tr>
                             ) : ordenes.map((orden) => (

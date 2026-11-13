@@ -175,7 +175,7 @@ export default function Facturas() {
                         </thead>
                         <tbody className="divide-y divide-negro/5">
                             {loading ? (
-                                <FilasSkeletonTabla filas={6} celdas={7} etiqueta="Cargando facturas" />
+                                <FilasSkeletonTabla filas={10} celdas={7} variante="facturas" etiqueta="Cargando facturas" />
                             ) : facturas.length === 0 ? (
                                 <tr><td colSpan="7" className="p-12 text-center text-gray-500 font-medium">No se encontraron facturas.</td></tr>
                             ) : facturas.map((fac) => (
