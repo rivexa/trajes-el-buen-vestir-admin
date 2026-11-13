@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { loginConCredenciales, obtenerPerfil } from '../lib/apiAuth';
+import { EVENTO_SESION_EXPIRADA } from '../lib/apiBase';
 import { guardarSesion, leerSesion, limpiarSesion } from './authStorage';
 
 const AuthContext = createContext(null);
@@ -45,6 +46,15 @@ export function AuthProvider({ children }) {
         return () => {
             cancelado = true;
         };
+    }, []);
+
+    useEffect(() => {
+        const alExpirar = () => {
+            setSesion(null);
+            setAuthListo(true);
+        };
+        window.addEventListener(EVENTO_SESION_EXPIRADA, alExpirar);
+        return () => window.removeEventListener(EVENTO_SESION_EXPIRADA, alExpirar);
     }, []);
 
     const login = useCallback(async ({ usuario, password }) => {

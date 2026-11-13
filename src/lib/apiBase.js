@@ -1,4 +1,6 @@
-import { leerSesion } from '../auth/authStorage';
+import { leerSesion, limpiarSesion } from '../auth/authStorage';
+
+export const EVENTO_SESION_EXPIRADA = 'tbv:sesion-expirada';
 
 export function urlApi(path = '') {
     const base = import.meta.env.VITE_API_URL;
@@ -20,6 +22,14 @@ export function headersAuth(extras = {}) {
     return headers;
 }
 
+function notificarSesionExpirada() {
+    if (!leerSesion()) return;
+    limpiarSesion();
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent(EVENTO_SESION_EXPIRADA));
+    }
+}
+
 /**
  * fetch hacia el API del taller.
  * @param {string} input URL absoluta o path relativo a VITE_API_URL
@@ -31,10 +41,17 @@ export async function fetchApi(input, options = {}) {
         ? input
         : urlApi(input);
 
-    return fetch(url, {
+    const response = await fetch(url, {
         ...rest,
         headers: sinAuth ? { ...headers } : headersAuth(headers),
     });
+
+    // Guard global del back: token inválido/expirado → salir al login.
+    if (!sinAuth && response.status === 401) {
+        notificarSesionExpirada();
+    }
+
+    return response;
 }
 
 export async function mensajeErrorHttp(response, respaldo) {
