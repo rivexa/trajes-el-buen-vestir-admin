@@ -17,7 +17,7 @@ describe('Inicio dashboard', () => {
         );
 
         expect(screen.getByRole('status', { name: /Cargando indicadores/i })).toBeInTheDocument();
-        expect(await screen.findByText('Resumen del taller')).toBeInTheDocument();
+        expect(await screen.findByText('Vista general')).toBeInTheDocument();
         expect(screen.getByText('Cobrado en el período')).toBeInTheDocument();
         expect(screen.getAllByText('$70.00').length).toBeGreaterThan(0);
         expect(screen.getByText('Cobros del período')).toBeInTheDocument();
