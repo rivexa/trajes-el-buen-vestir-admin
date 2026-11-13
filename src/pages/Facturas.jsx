@@ -173,10 +173,10 @@ export default function Facturas() {
                         </colgroup>
                         <thead className="thead-marca">
                             <tr>
-                                <th className="text-center">N° Factura</th>
-                                <th className="text-center">Cliente</th>
-                                <th className="text-center">Orden</th>
-                                <th className="text-center">Método Pago</th>
+                                <th>N° Factura</th>
+                                <th>Cliente</th>
+                                <th>Orden</th>
+                                <th>Método Pago</th>
                                 <th className="text-center">Finanzas</th>
                                 <th className="text-center">Estado SRI</th>
                                 <th className="text-center">Acciones</th>
@@ -189,18 +189,18 @@ export default function Facturas() {
                                 <tr><td colSpan="7" className="p-12 text-center text-gray-500 font-medium">No se encontraron facturas.</td></tr>
                             ) : facturas.map((fac) => (
                                 <tr key={fac.id} className={`${fac.estado_sri === 'ANULADA' ? 'bg-red-50/50 grayscale opacity-70' : 'fila-tabla'}`}>
-                                    <td className="p-4 text-center font-bold text-negro">
+                                    <td className="p-4 font-bold text-negro">
                                         {fac.estado_sri === 'ANULADA' ? <span className="line-through text-gray-400">FAC-{fac.secuencial_local?.toString().padStart(5, '0')}</span> : `FAC-${fac.secuencial_local?.toString().padStart(5, '0')}`}
                                         <div className="text-[15px] text-gray-500 font-normal mt-1">{new Date(fac.fecha_emision).toLocaleDateString()}</div>
                                     </td>
-                                    <td className="p-4 text-center">
+                                    <td className="p-4">
                                         <div className="font-semibold text-gray-800">{fac.clientes?.nombres} {fac.clientes?.apellidos}</div>
                                         <div className="text-[15px] text-gray-500">{fac.clientes?.cedula_ruc}</div>
                                     </td>
-                                    <td className="p-4 text-center font-medium text-gray-600">
+                                    <td className="p-4 font-medium text-gray-600">
                                         {fac.ordenes_pedido?.numero_orden ? `ORD-${fac.ordenes_pedido.numero_orden.toString().padStart(4, '0')}` : 'Venta Directa'}
                                     </td>
-                                    <td className="p-4 text-center font-medium text-gray-700">
+                                    <td className="p-4 font-medium text-gray-700">
                                         <span className="bg-gray-100 px-3 py-1 rounded-full text-[13px] border border-gray-200">{fac.metodo_pago}</span>
                                     </td>
                                     <td className="p-4 text-center">
