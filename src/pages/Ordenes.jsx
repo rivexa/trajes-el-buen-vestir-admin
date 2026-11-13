@@ -243,14 +243,21 @@ export default function Ordenes() {
 
             <div className="card-panel flex flex-col flex-1 overflow-hidden">
                 <div className="overflow-x-auto flex-1">
-                    <table className="min-w-[980px] w-full text-left whitespace-nowrap">
+                    <table className="min-w-[980px] w-full table-fixed text-left whitespace-nowrap">
+                        <colgroup>
+                            <col className="w-[16%]" />
+                            <col className="w-[22%]" />
+                            <col className="w-[16%]" />
+                            <col className="w-[24%]" />
+                            <col className="w-[22%]" />
+                        </colgroup>
                         <thead className="thead-marca">
                             <tr>
                                 <th>Orden</th>
                                 <th>Cliente</th>
                                 <th className="text-center">Finanzas</th>
                                 <th className="text-center">Estado</th>
-                                <th className="text-center min-w-[7.5rem]">Acciones</th>
+                                <th className="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-negro/5">

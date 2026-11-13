@@ -16,13 +16,19 @@ export default function TablaClientes({
     return (
         <div className="card-panel flex flex-col flex-1 overflow-hidden">
             <div className="overflow-x-auto flex-1">
-                <table className="min-w-full text-left border-collapse whitespace-nowrap">
+                <table className="min-w-full table-fixed text-left border-collapse whitespace-nowrap">
+                    <colgroup>
+                        <col className="w-[38%]" />
+                        <col className="w-[20%]" />
+                        <col className="w-[24%]" />
+                        <col className="w-[18%]" />
+                    </colgroup>
                     <thead className="thead-marca">
                         <tr>
-                            <th className="w-[38%]">Cliente</th>
-                            <th className="w-[20%]">Identificación</th>
-                            <th className="w-[24%]">Contacto</th>
-                            <th className="text-center w-[18%]">Acciones</th>
+                            <th>Cliente</th>
+                            <th>Identificación</th>
+                            <th>Contacto</th>
+                            <th className="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-negro/5 text-base text-grisMarca">
