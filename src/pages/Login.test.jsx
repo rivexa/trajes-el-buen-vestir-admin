@@ -49,10 +49,22 @@ describe('Login', () => {
         renderLogin();
 
         await user.type(screen.getByLabelText(/^Usuario$/i), 'admin');
-        await user.type(screen.getByLabelText(/^Contraseña$/i), 'secreto');
+        await user.type(screen.getByLabelText(/^Contraseña$/i), 'Admin123!');
         await user.keyboard('{Enter}');
 
         expect(await screen.findByText('Panel privado')).toBeInTheDocument();
+    });
+
+    it('muestra el error del API si las credenciales fallan', async () => {
+        limpiarSesion();
+        const user = userEvent.setup();
+        renderLogin();
+
+        await user.type(screen.getByLabelText(/^Usuario$/i), 'admin');
+        await user.type(screen.getByLabelText(/^Contraseña$/i), 'mala');
+        await user.click(screen.getByRole('button', { name: /Entrar/i }));
+
+        expect(await screen.findByText('Usuario o contraseña incorrectos.')).toBeInTheDocument();
     });
 
     it('valida con Enter si faltan campos', async () => {
