@@ -88,7 +88,10 @@ function CeldaSkeleton({ variante, indice, etiqueta }) {
         return (
             <td className="p-4">
                 <div className="flex items-center justify-center gap-1">
-                    <Skeleton className="h-8 w-20 rounded-lg" />
+                    <div className="w-[6.75rem] shrink-0 mr-1">
+                        <Skeleton className="h-[2.125rem] w-full rounded-lg" />
+                    </div>
+                    <Skeleton className="h-8 w-8 rounded-lg" />
                     <Skeleton className="h-8 w-8 rounded-lg" />
                     <Skeleton className="h-8 w-8 rounded-lg" />
                     <Skeleton className="h-8 w-8 rounded-lg" />
