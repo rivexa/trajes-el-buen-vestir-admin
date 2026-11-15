@@ -1,9 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { http, HttpResponse } from 'msw';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { AuthProvider } from '../auth/AuthContext';
 import { limpiarSesion } from '../auth/authStorage';
+import { server } from '../test/server';
 import Login from './Login';
 
 function renderLogin(rutaInicial = '/login') {
@@ -65,6 +67,28 @@ describe('Login', () => {
         await user.click(screen.getByRole('button', { name: /Entrar/i }));
 
         expect(await screen.findByText('Usuario o contraseña incorrectos.')).toBeInTheDocument();
+    });
+
+    it('muestra aviso claro si el back limita intentos (429)', async () => {
+        limpiarSesion();
+        server.use(
+            http.post('http://api.test/auth/login', () => (
+                HttpResponse.json(
+                    { statusCode: 429, message: 'ThrottlerException: Too Many Requests' },
+                    { status: 429 },
+                )
+            )),
+        );
+        const user = userEvent.setup();
+        renderLogin();
+
+        await user.type(screen.getByLabelText(/^Usuario$/i), 'admin');
+        await user.type(screen.getByLabelText(/^Contraseña$/i), 'Admin123!');
+        await user.click(screen.getByRole('button', { name: /Entrar/i }));
+
+        expect(
+            await screen.findByText('Demasiados intentos. Espera un minuto e inténtalo de nuevo.'),
+        ).toBeInTheDocument();
     });
 
     it('valida con Enter si faltan campos', async () => {
