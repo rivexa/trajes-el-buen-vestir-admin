@@ -6,6 +6,7 @@ import { fetchApi, mensajeErrorHttp, urlApi } from './apiBase';
  * body: { usuario, password }
  * 200: { access_token, token_type, user: { id, nombre, rol } }
  * 401: { message }
+ * 429: rate limit (5 intentos / minuto en el back)
  */
 export async function loginConCredenciales({ usuario, password }) {
     const usuarioLimpio = String(usuario || '').trim();
@@ -23,6 +24,9 @@ export async function loginConCredenciales({ usuario, password }) {
     });
 
     if (!response.ok) {
+        if (response.status === 429) {
+            throw new Error('Demasiados intentos. Espera un minuto e inténtalo de nuevo.');
+        }
         throw new Error(await mensajeErrorHttp(response, 'No se pudo iniciar sesión.'));
     }
 
