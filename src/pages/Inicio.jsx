@@ -9,7 +9,7 @@ import useDashboard from '../hooks/useDashboard';
 import formatoDinero from '../utils/formatoDinero';
 import { formatearFechaCorta, periodoDesdePreset } from '../utils/periodoEcuador';
 
-const ORDEN_ESTADOS = ['Pendiente', 'En Confección', 'Listo para Prueba', 'Entregado', 'Anulada'];
+const ORDEN_ESTADOS = ['Pendiente', 'En Confección', 'Listo para Prueba', 'Terminado', 'Entregado', 'Anulada'];
 
 function dineroCorto(valor) {
     const numero = Number(valor) || 0;
@@ -39,11 +39,11 @@ export default function Inicio() {
         valor: total,
     }));
 
+    // Izquierda → derecha: más antiguo → más reciente (últimos 12 días con dato).
     const serieCobros = (cobranza?.cobros_periodo?.por_dia || [])
         .slice()
-        .reverse()
-        .slice(0, 12)
-        .reverse()
+        .sort((a, b) => String(a.fecha).localeCompare(String(b.fecha)))
+        .slice(-12)
         .map((dia) => ({
             id: dia.fecha,
             etiqueta: formatearFechaCorta(dia.fecha).slice(0, 5),

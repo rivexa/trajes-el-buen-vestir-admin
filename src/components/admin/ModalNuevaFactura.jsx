@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Search, Plus, Trash2, Receipt, UserCheck, Package, ShoppingCart, ChevronDown, ChevronUp, Loader2, UserPlus } from 'lucide-react';
 import { fetchApi } from '../../lib/apiBase';
+import { ordenAnulada } from '../../utils/ordenDominio';
 import { Skeleton } from './Skeleton';
 
 const API_CLIENTES = `${import.meta.env.VITE_API_URL}/clientes`;
@@ -57,7 +58,7 @@ export default function ModalNuevaFactura({ isOpen, onClose, onSuccess }) {
                 const resOrdenes = await fetchApi(`${API_ORDENES}?search=${dataCliente.cedula_ruc}&limit=20`);
                 if (resOrdenes.ok) {
                     const dataOrdenes = await resOrdenes.json();
-                    setOrdenesPendientes(dataOrdenes.data.filter(o => !o.factura_id && o.estado !== 'Anulada'));
+                    setOrdenesPendientes(dataOrdenes.data.filter((o) => !o.factura_id && !ordenAnulada(o)));
                 }
             } else {
                 setMostrarFormCliente(true);

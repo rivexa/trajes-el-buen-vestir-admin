@@ -2,28 +2,31 @@ import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, UserCheck, PackageOpen, DollarSign, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { fetchApi } from '../../lib/apiBase';
 import { SkeletonBloqueModal } from './Skeleton';
+import {
+    ESTADOS_DETALLE_ACTIVOS,
+    ITEM_LINEA_VACIO,
+    TIPOS_ITEM_ORDEN,
+    normalizarTipoItem,
+} from '../../utils/ordenDominio';
 
 const API_ORDENES = `${import.meta.env.VITE_API_URL}/ordenes`;
 
 export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }) {
     const [cliente, setCliente] = useState(null);
     const [detalles, setDetalles] = useState([]);
-    const [fechaEntrega, setFechaEntrega] = useState('');
+    const [fechaDefault, setFechaDefault] = useState('');
     const [abono, setAbono] = useState('');
 
     const [cargandoOrden, setCargandoOrden] = useState(true);
     const [guardando, setGuardando] = useState(false);
     const [errorOrden, setErrorOrden] = useState('');
 
-    const [nuevoItem, setNuevoItem] = useState({ tipo_item: 'Confección', descripcion: '', cantidad: 1, precio_unitario: '' });
+    const [nuevoItem, setNuevoItem] = useState(ITEM_LINEA_VACIO);
     const [subiendoImagen, setSubiendoImagen] = useState(false);
     const [imagenAmpliada, setImagenAmpliada] = useState(null);
 
-    // Cargar la orden al abrir el modal
     useEffect(() => {
-        if (isOpen && ordenId) {
-            cargarOrden();
-        }
+        if (isOpen && ordenId) cargarOrden();
     }, [isOpen, ordenId]);
 
     const cargarOrden = async () => {
@@ -34,22 +37,25 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
             if (response.ok) {
                 const data = await response.json();
                 setCliente({ ...data.clientes, id: data.cliente_id });
-                setFechaEntrega(data.fecha_entrega_estimada ? data.fecha_entrega_estimada.split('T')[0] : '');
-                setAbono(data.abono.toString());
+                setAbono(String(data.abono ?? 0));
 
-                // Formatear detalles para el estado local
-                const detallesFormateados = data.orden_detalles.map(d => ({
-                    tipo_item: d.tipo_item,
+                const detallesFormateados = (data.orden_detalles || []).map((d) => ({
+                    tipo_item: normalizarTipoItem(d.tipo_item),
                     descripcion: d.descripcion,
                     cantidad: d.cantidad,
                     precio_unitario: d.precio_unitario,
-                    imagen_referencia_url: d.imagen_referencia_url || ''
+                    estado: d.estado || 'Pendiente',
+                    fecha_entrega: d.fecha_entrega ? String(d.fecha_entrega).slice(0, 10) : '',
+                    imagen_referencia_url: d.imagen_referencia_url || '',
                 }));
                 setDetalles(detallesFormateados);
+
+                const primeraFecha = detallesFormateados.find((d) => d.fecha_entrega)?.fecha_entrega || '';
+                setFechaDefault(primeraFecha);
             } else {
                 setErrorOrden('No se pudo cargar la orden para edición.');
             }
-        } catch (error) {
+        } catch {
             setErrorOrden('Error de red al cargar la orden.');
         } finally {
             setCargandoOrden(false);
@@ -61,10 +67,10 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
     const handleClose = () => {
         setCliente(null);
         setDetalles([]);
-        setFechaEntrega('');
+        setFechaDefault('');
         setAbono('');
         setErrorOrden('');
-        setNuevoItem({ tipo_item: 'Confección', descripcion: '', cantidad: 1, precio_unitario: '' });
+        setNuevoItem(ITEM_LINEA_VACIO());
         onClose();
     };
 
@@ -81,16 +87,15 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
             const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
             const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
                 method: 'POST',
-                body: formData
+                body: formData,
             });
-
             const data = await response.json();
             if (data.secure_url) {
-                setNuevoItem({ ...nuevoItem, imagen_referencia_url: data.secure_url });
+                setNuevoItem((prev) => ({ ...prev, imagen_referencia_url: data.secure_url }));
             } else {
                 setErrorOrden('Error al procesar la imagen.');
             }
-        } catch (error) {
+        } catch {
             setErrorOrden('Error de red al subir imagen.');
         } finally {
             setSubiendoImagen(false);
@@ -98,17 +103,32 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
     };
 
     const agregarDetalle = () => {
-        if (!nuevoItem.descripcion.trim() || nuevoItem.precio_unitario <= 0 || nuevoItem.cantidad <= 0) {
-            setErrorOrden('Descripción, cantidad y precio son obligatorios.');
-            return;
+        if (!nuevoItem.descripcion.trim() || Number(nuevoItem.precio_unitario) <= 0 || nuevoItem.cantidad <= 0) {
+            return setErrorOrden('Descripción, cantidad y precio son obligatorios.');
         }
-        setDetalles([...detalles, { ...nuevoItem, precio_unitario: parseFloat(nuevoItem.precio_unitario) }]);
-        setNuevoItem({ tipo_item: 'Confección', descripcion: '', cantidad: 1, precio_unitario: '', imagen_referencia_url: '' });
+        if (!nuevoItem.fecha_entrega && !fechaDefault) {
+            return setErrorOrden('Indica fecha de entrega en la línea o una fecha por defecto.');
+        }
+        setDetalles([
+            ...detalles,
+            {
+                ...nuevoItem,
+                precio_unitario: parseFloat(nuevoItem.precio_unitario),
+                fecha_entrega: nuevoItem.fecha_entrega || fechaDefault,
+                estado: nuevoItem.estado || 'Pendiente',
+            },
+        ]);
+        setNuevoItem({ ...ITEM_LINEA_VACIO(), fecha_entrega: fechaDefault });
         setErrorOrden('');
     };
 
-    const eliminarDetalle = (index) => {
-        setDetalles(detalles.filter((_, i) => i !== index));
+    const eliminarDetalle = (index) => setDetalles(detalles.filter((_, i) => i !== index));
+
+    const aplicarFechaATodas = () => {
+        if (!fechaDefault) return setErrorOrden('Elige primero la fecha por defecto.');
+        setDetalles((prev) => prev.map((item) => ({ ...item, fecha_entrega: fechaDefault })));
+        setNuevoItem((prev) => ({ ...prev, fecha_entrega: fechaDefault }));
+        setErrorOrden('');
     };
 
     const subtotal = detalles.reduce((acc, item) => acc + (item.cantidad * item.precio_unitario), 0);
@@ -116,22 +136,30 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
 
     const handleSubmitEditar = async () => {
         setErrorOrden('');
-        if (detalles.length === 0) return setErrorOrden('Debes añadir al menos una prenda.');
+        if (detalles.length === 0) return setErrorOrden('Debes añadir al menos un producto o servicio.');
         if (parseFloat(abono) > subtotal) return setErrorOrden('El abono no puede superar el subtotal.');
 
         setGuardando(true);
         try {
             const payload = {
                 cliente_id: cliente.id,
-                fecha_entrega_estimada: fechaEntrega || undefined,
+                fecha_entrega_default: fechaDefault || undefined,
                 abono: parseFloat(abono) || 0,
-                detalles: detalles
+                detalles: detalles.map((d) => ({
+                    tipo_item: d.tipo_item,
+                    descripcion: d.descripcion,
+                    cantidad: d.cantidad,
+                    precio_unitario: d.precio_unitario,
+                    estado: d.estado || 'Pendiente',
+                    fecha_entrega: d.fecha_entrega || undefined,
+                    imagen_referencia_url: d.imagen_referencia_url || undefined,
+                })),
             };
 
             const response = await fetchApi(`${API_ORDENES}/${ordenId}/editar`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
             });
 
             if (response.ok) {
@@ -139,9 +167,9 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                 handleClose();
             } else {
                 const errData = await response.json();
-                setErrorOrden(errData.message || 'Error al actualizar la orden.');
+                setErrorOrden(Array.isArray(errData.message) ? errData.message[0] : (errData.message || 'Error al actualizar la orden.'));
             }
-        } catch (error) {
+        } catch {
             setErrorOrden('Error de red al guardar.');
         } finally {
             setGuardando(false);
@@ -156,7 +184,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                     <h2 className="text-xl font-serif font-bold text-negro flex items-center gap-2">
                         <PackageOpen className="text-rojoMarca" /> Editar Orden de Pedido
                     </h2>
-                    <button onClick={handleClose} className="text-gray-400 hover:text-rojoMarca transition"><X size={24} /></button>
+                    <button type="button" onClick={handleClose} className="text-gray-400 hover:text-rojoMarca transition"><X size={24} /></button>
                 </div>
 
                 <div className="p-6 overflow-y-auto flex-1 bg-white">
@@ -164,9 +192,8 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                         <SkeletonBloqueModal />
                     ) : (
                         <>
-                            {/* Cliente Bloqueado (No se puede cambiar en edición) */}
                             <div className="mb-8">
-                                <h3 className="seccion-modal">1. Cliente Seleccionado</h3>
+                                <h3 className="seccion-modal">1. Cliente seleccionado</h3>
                                 <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-center gap-3">
                                     <div className="bg-gray-200 p-2 rounded-full text-gray-600"><UserCheck size={20} /></div>
                                     <div>
@@ -176,57 +203,78 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                                 </div>
                             </div>
 
-                            {/* Prendas */}
                             <div className="mb-8">
-                                <h3 className="seccion-modal">2. Prendas y Servicios</h3>
+                                <h3 className="seccion-modal">2. Productos y servicios</h3>
+
+                                <div className="mb-4 flex flex-col sm:flex-row gap-3 sm:items-end">
+                                    <div className="flex-1">
+                                        <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha por defecto</label>
+                                        <input type="date" value={fechaDefault} onChange={(e) => setFechaDefault(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-rojoMarca text-sm" />
+                                    </div>
+                                    <button type="button" onClick={aplicarFechaATodas} className="px-4 py-2.5 rounded-lg border border-negro/10 text-sm font-semibold text-negro hover:bg-plomoSuave transition">
+                                        Aplicar a todas
+                                    </button>
+                                </div>
 
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                                     <div className="md:col-span-3">
                                         <label className="block text-xs font-semibold text-gray-600 mb-1">Tipo</label>
                                         <select value={nuevoItem.tipo_item} onChange={(e) => setNuevoItem({ ...nuevoItem, tipo_item: e.target.value })} className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca">
-                                            <option value="Confección">Confección a Medida</option>
-                                            <option value="Arreglo">Arreglo / Ajuste</option>
-                                            <option value="Uniforme">Uniforme Corporativo</option>
-                                            <option value="Otro">Otro</option>
+                                            {TIPOS_ITEM_ORDEN.map((tipo) => (
+                                                <option key={tipo} value={tipo}>{tipo}</option>
+                                            ))}
                                         </select>
                                     </div>
-                                    <div className="md:col-span-4">
+                                    <div className="md:col-span-5">
                                         <label className="block text-xs font-semibold text-gray-600 mb-1">Descripción</label>
                                         <input type="text" value={nuevoItem.descripcion} onChange={(e) => setNuevoItem({ ...nuevoItem, descripcion: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-xs font-semibold text-gray-600 mb-1">Cant.</label>
-                                        <input type="number" min="1" value={nuevoItem.cantidad} onChange={(e) => setNuevoItem({ ...nuevoItem, cantidad: parseInt(e.target.value) || 1 })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
+                                        <input type="number" min="1" value={nuevoItem.cantidad} onChange={(e) => setNuevoItem({ ...nuevoItem, cantidad: parseInt(e.target.value, 10) || 1 })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-xs font-semibold text-gray-600 mb-1">Precio Un. ($)</label>
                                         <input type="number" step="0.01" value={nuevoItem.precio_unitario} onChange={(e) => setNuevoItem({ ...nuevoItem, precio_unitario: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
                                     </div>
-
-                                    <div className="md:col-span-12 flex flex-col sm:flex-row gap-3 mt-2 border-t border-gray-200 pt-3">
+                                    <div className="md:col-span-4">
+                                        <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha entrega</label>
+                                        <input type="date" value={nuevoItem.fecha_entrega} onChange={(e) => setNuevoItem({ ...nuevoItem, fecha_entrega: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
+                                    </div>
+                                    <div className="md:col-span-4">
+                                        <label className="block text-xs font-semibold text-gray-600 mb-1">Estado</label>
+                                        <select value={nuevoItem.estado} onChange={(e) => setNuevoItem({ ...nuevoItem, estado: e.target.value })} className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca">
+                                            {ESTADOS_DETALLE_ACTIVOS.map((estado) => (
+                                                <option key={estado} value={estado}>{estado}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="md:col-span-4 flex gap-3">
                                         <div className="flex-1">
                                             <input type="file" id="edit-upload-image" accept="image/*" className="hidden" onChange={handleSubirImagen} />
-                                            <label htmlFor="edit-upload-image" className={`cursor-pointer w-full sm:w-auto justify-center inline-flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm font-medium transition ${nuevoItem.imagen_referencia_url ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
+                                            <label htmlFor="edit-upload-image" className={`cursor-pointer w-full justify-center inline-flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm font-medium transition ${nuevoItem.imagen_referencia_url ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                                                 {subiendoImagen ? <Loader2 size={18} className="animate-spin" /> : <ImageIcon size={18} />}
-                                                {subiendoImagen ? 'Subiendo...' : nuevoItem.imagen_referencia_url ? 'Imagen Lista' : 'Añadir Foto'}
+                                                {subiendoImagen ? 'Subiendo...' : nuevoItem.imagen_referencia_url ? 'Imagen lista' : 'Añadir foto'}
                                             </label>
                                         </div>
-                                        <button type="button" onClick={agregarDetalle} disabled={subiendoImagen} className="w-full sm:w-auto px-6 py-2.5 bg-negro text-white font-medium rounded-lg hover:bg-gray-800 transition disabled:opacity-50 flex items-center justify-center gap-2">
+                                        <button type="button" onClick={agregarDetalle} disabled={subiendoImagen} className="px-5 py-2.5 bg-negro text-white font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 flex items-center gap-2">
                                             <Plus size={18} /> Añadir
                                         </button>
                                     </div>
                                 </div>
 
                                 {detalles.length > 0 && (
-                                    <div className="border border-gray-100 rounded-lg overflow-hidden">
+                                    <div className="border border-gray-100 rounded-lg overflow-x-auto">
                                         <table className="min-w-full text-left text-sm">
                                             <thead className="bg-gray-50 text-gray-600">
                                                 <tr>
-                                                    <th className="p-3 font-semibold w-16">Foto</th>
-                                                    <th className="p-3 font-semibold">Prenda/Servicio</th>
-                                                    <th className="p-3 font-semibold text-center">Cant.</th>
-                                                    <th className="p-3 font-semibold text-right">Subtotal</th>
-                                                    <th className="p-3"></th>
+                                                    <th className="p-3">Foto</th>
+                                                    <th className="p-3">Producto / servicio</th>
+                                                    <th className="p-3">Entrega</th>
+                                                    <th className="p-3">Estado</th>
+                                                    <th className="p-3 text-center">Cant.</th>
+                                                    <th className="p-3 text-right">Subtotal</th>
+                                                    <th className="p-3" />
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-100">
@@ -234,21 +282,23 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                                                     <tr key={index} className="hover:bg-gray-50">
                                                         <td className="p-3">
                                                             {item.imagen_referencia_url ? (
-                                                                <button onClick={() => setImagenAmpliada(item.imagen_referencia_url)} className="relative group border border-gray-200 rounded-md overflow-hidden block">
-                                                                    <img src={item.imagen_referencia_url} alt="Ref" className="w-10 h-10 object-cover group-hover:scale-110 transition-transform" />
+                                                                <button type="button" onClick={() => setImagenAmpliada(item.imagen_referencia_url)} className="border border-gray-200 rounded-md overflow-hidden block">
+                                                                    <img src={item.imagen_referencia_url} alt="Ref" className="w-10 h-10 object-cover" />
                                                                 </button>
                                                             ) : (
-                                                                <div className="w-10 h-10 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center text-gray-400 text-xs">N/A</div>
+                                                                <div className="w-10 h-10 bg-gray-100 rounded-md border text-gray-400 text-xs flex items-center justify-center">N/A</div>
                                                             )}
                                                         </td>
                                                         <td className="p-3">
                                                             <span className="font-medium text-negro block">{item.descripcion}</span>
                                                             <span className="text-xs text-gray-500">{item.tipo_item}</span>
                                                         </td>
+                                                        <td className="p-3 text-[13px]">{item.fecha_entrega || '—'}</td>
+                                                        <td className="p-3 text-[13px]">{item.estado}</td>
                                                         <td className="p-3 text-center">{item.cantidad}</td>
                                                         <td className="p-3 text-right font-medium">${(item.cantidad * item.precio_unitario).toFixed(2)}</td>
                                                         <td className="p-3 text-right">
-                                                            <button onClick={() => eliminarDetalle(index)} className="text-red-400 hover:text-rojoMarca transition"><Trash2 size={16} /></button>
+                                                            <button type="button" onClick={() => eliminarDetalle(index)} className="text-red-400 hover:text-rojoMarca"><Trash2 size={16} /></button>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -258,17 +308,12 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                                 )}
                             </div>
 
-                            {/* Finanzas */}
                             <div>
-                                <h3 className="seccion-modal">3. Condiciones Comerciales</h3>
+                                <h3 className="seccion-modal">3. Condiciones comerciales</h3>
                                 <div className="flex flex-col md:flex-row gap-8">
                                     <div className="flex-1 space-y-4">
                                         <div>
-                                            <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha de Entrega Estimada</label>
-                                            <input type="date" value={fechaEntrega} onChange={(e) => setFechaEntrega(e.target.value)} className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-rojoMarca" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-semibold text-gray-600 mb-1">Abono Registrado ($)</label>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">Abono registrado ($)</label>
                                             <div className="relative">
                                                 <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                                 <input type="number" step="0.01" min="0" value={abono} onChange={(e) => setAbono(e.target.value)} className="w-full pl-8 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-rojoMarca font-bold" />
@@ -280,9 +325,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                                         <div className="flex justify-between mb-3 text-sm text-green-700"><span>Abono:</span> <span className="font-medium">-${(parseFloat(abono) || 0).toFixed(2)}</span></div>
                                         <div className="pt-3 border-t border-gray-200 flex justify-between items-center">
                                             <span className="font-bold text-negro uppercase tracking-wider text-sm">Saldo:</span>
-                                            <span className={`text-2xl font-bold ${saldoCalculado < 0 ? 'text-red-500' : 'text-rojoMarca'}`}>
-                                                ${saldoCalculado.toFixed(2)}
-                                            </span>
+                                            <span className={`text-2xl font-bold ${saldoCalculado < 0 ? 'text-red-500' : 'text-rojoMarca'}`}>${saldoCalculado.toFixed(2)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -300,10 +343,9 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                 </div>
             </div>
 
-            {/* Visor de Imagen Ampliada */}
             {imagenAmpliada && (
                 <div className="fixed inset-0 z-[70] bg-negro/95 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setImagenAmpliada(null)}>
-                    <button className="absolute top-6 right-6 text-white/70 hover:text-white transition bg-white/10 rounded-full p-2"><X size={24} /></button>
+                    <button type="button" className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 rounded-full p-2"><X size={24} /></button>
                     <img src={imagenAmpliada} alt="Ref Ampliada" className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" onClick={(e) => e.stopPropagation()} />
                 </div>
             )}

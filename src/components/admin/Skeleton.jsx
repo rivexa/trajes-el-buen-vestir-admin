@@ -80,7 +80,16 @@ function CeldaSkeleton({ variante, indice, etiqueta }) {
             return (
                 <td className="p-4">
                     <div className="flex justify-center">
-                        <Skeleton className="h-11 w-[14rem] rounded-xl" />
+                        <Skeleton className="h-4 w-24" />
+                    </div>
+                </td>
+            );
+        }
+        if (indice === 4) {
+            return (
+                <td className="p-4">
+                    <div className="flex justify-center">
+                        <Skeleton className="h-10 w-36 rounded-xl" />
                     </div>
                 </td>
             );
