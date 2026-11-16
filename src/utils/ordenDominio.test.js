@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+    esTipoVenta,
     normalizarTipoItem,
     ordenAnulada,
     proximaFechaEntrega,
@@ -11,6 +12,8 @@ describe('ordenDominio', () => {
         expect(normalizarTipoItem('Otro')).toBe('Venta');
         expect(normalizarTipoItem('Confección')).toBe('Confección a Medida');
         expect(normalizarTipoItem('Uniformes')).toBe('Uniformes');
+        expect(esTipoVenta('Venta')).toBe(true);
+        expect(esTipoVenta('Arreglos')).toBe(false);
     });
 
     it('detecta orden anulada por líneas', () => {

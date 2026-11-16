@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { X, Search, Plus, Trash2, UserCheck, PackagePlus, DollarSign, Image as ImageIcon, Loader2, UserPlus } from 'lucide-react';
 import { fetchApi } from '../../lib/apiBase';
 import {
-    ESTADOS_DETALLE_ACTIVOS,
+    ESTADOS_VENTA_AL_CREAR,
     ITEM_LINEA_VACIO,
     TIPOS_ITEM_ORDEN,
+    esTipoVenta,
 } from '../../utils/ordenDominio';
+import { hoyIsoEcuador } from '../../utils/periodoEcuador';
 
 const API_CLIENTES = `${import.meta.env.VITE_API_URL}/clientes`;
 const API_ORDENES = `${import.meta.env.VITE_API_URL}/ordenes`;
@@ -119,11 +121,32 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
         }
     };
 
+    const esVenta = esTipoVenta(nuevoItem.tipo_item);
+    const hoyIso = hoyIsoEcuador();
+
+    const cambiarTipo = (tipo) => {
+        if (esTipoVenta(tipo)) {
+            setNuevoItem((prev) => ({
+                ...prev,
+                tipo_item: tipo,
+                fecha_entrega: '',
+                estado: 'Entregado',
+            }));
+            return;
+        }
+        setNuevoItem((prev) => ({
+            ...prev,
+            tipo_item: tipo,
+            estado: 'Pendiente',
+            fecha_entrega: prev.fecha_entrega || fechaDefault,
+        }));
+    };
+
     const agregarDetalle = () => {
         if (!nuevoItem.descripcion.trim() || Number(nuevoItem.precio_unitario) <= 0 || nuevoItem.cantidad <= 0) {
             return setError('Completa tipo, descripción, cantidad y precio.');
         }
-        if (!nuevoItem.fecha_entrega && !fechaDefault) {
+        if (!esVenta && !nuevoItem.fecha_entrega && !fechaDefault) {
             return setError('Indica fecha de entrega en la línea o una fecha por defecto.');
         }
         setDetalles([
@@ -131,8 +154,8 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
             {
                 ...nuevoItem,
                 precio_unitario: parseFloat(nuevoItem.precio_unitario),
-                fecha_entrega: nuevoItem.fecha_entrega || fechaDefault,
-                estado: nuevoItem.estado || 'Pendiente',
+                fecha_entrega: esVenta ? hoyIso : (nuevoItem.fecha_entrega || fechaDefault),
+                estado: esVenta ? (nuevoItem.estado || 'Entregado') : 'Pendiente',
             },
         ]);
         setNuevoItem({ ...ITEM_LINEA_VACIO(), fecha_entrega: fechaDefault });
@@ -143,8 +166,12 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
 
     const aplicarFechaATodas = () => {
         if (!fechaDefault) return setError('Elige primero la fecha por defecto.');
-        setDetalles((prev) => prev.map((item) => ({ ...item, fecha_entrega: fechaDefault })));
-        setNuevoItem((prev) => ({ ...prev, fecha_entrega: fechaDefault }));
+        setDetalles((prev) => prev.map((item) => (
+            esTipoVenta(item.tipo_item) ? item : { ...item, fecha_entrega: fechaDefault }
+        )));
+        setNuevoItem((prev) => (
+            esTipoVenta(prev.tipo_item) ? prev : { ...prev, fecha_entrega: fechaDefault }
+        ));
         setError('');
     };
 
@@ -155,8 +182,9 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
         if (!cliente) return setError('Selecciona un cliente.');
         if (detalles.length === 0) return setError('Añade al menos un producto o servicio.');
         if (parseFloat(abono) > subtotal) return setError('El abono no puede superar el subtotal.');
-        if (detalles.some((d) => !d.fecha_entrega) && !fechaDefault) {
-            return setError('Cada línea necesita fecha de entrega (o una fecha por defecto).');
+        const faltaFecha = detalles.some((d) => !esTipoVenta(d.tipo_item) && !d.fecha_entrega);
+        if (faltaFecha && !fechaDefault) {
+            return setError('Cada línea (salvo Venta) necesita fecha de entrega o una fecha por defecto.');
         }
 
         setGuardando(true); setError('');
@@ -165,15 +193,18 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
                 cliente_id: cliente.id,
                 fecha_entrega_default: fechaDefault || undefined,
                 abono: parseFloat(abono) || 0,
-                detalles: detalles.map((d) => ({
-                    tipo_item: d.tipo_item,
-                    descripcion: d.descripcion,
-                    cantidad: d.cantidad,
-                    precio_unitario: d.precio_unitario,
-                    estado: d.estado || 'Pendiente',
-                    fecha_entrega: d.fecha_entrega || undefined,
-                    imagen_referencia_url: d.imagen_referencia_url || undefined,
-                })),
+                detalles: detalles.map((d) => {
+                    const venta = esTipoVenta(d.tipo_item);
+                    return {
+                        tipo_item: d.tipo_item,
+                        descripcion: d.descripcion,
+                        cantidad: d.cantidad,
+                        precio_unitario: d.precio_unitario,
+                        estado: venta ? (d.estado || 'Entregado') : 'Pendiente',
+                        fecha_entrega: venta ? (d.fecha_entrega || hoyIso) : (d.fecha_entrega || undefined),
+                        imagen_referencia_url: d.imagen_referencia_url || undefined,
+                    };
+                }),
             };
             const response = await fetchApi(`${API_ORDENES}/nueva`, {
                 method: 'POST',
@@ -259,12 +290,21 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
                         <div className="mb-4 flex flex-col sm:flex-row gap-3 sm:items-end">
                             <div className="flex-1">
                                 <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha por defecto</label>
-                                <input
-                                    type="date"
-                                    value={fechaDefault}
-                                    onChange={(e) => setFechaDefault(e.target.value)}
-                                    className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-rojoMarca text-sm"
-                                />
+                                <div className="flex gap-2">
+                                    <input
+                                        type="date"
+                                        value={fechaDefault}
+                                        onChange={(e) => setFechaDefault(e.target.value)}
+                                        className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-rojoMarca text-sm"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setFechaDefault(hoyIso)}
+                                        className="shrink-0 px-3 py-2.5 rounded-lg border border-negro/10 text-sm font-semibold text-negro hover:bg-plomoSuave transition"
+                                    >
+                                        Hoy
+                                    </button>
+                                </div>
                             </div>
                             <button
                                 type="button"
@@ -280,7 +320,7 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
                                 <label className="block text-xs font-semibold text-gray-600 mb-1">Tipo</label>
                                 <select
                                     value={nuevoItem.tipo_item}
-                                    onChange={(e) => setNuevoItem({ ...nuevoItem, tipo_item: e.target.value })}
+                                    onChange={(e) => cambiarTipo(e.target.value)}
                                     className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca"
                                 >
                                     {TIPOS_ITEM_ORDEN.map((tipo) => (
@@ -300,23 +340,40 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
                                 <label className="block text-xs font-semibold text-gray-600 mb-1">Precio Un. ($)</label>
                                 <input type="number" step="0.01" value={nuevoItem.precio_unitario} onChange={(e) => setNuevoItem({ ...nuevoItem, precio_unitario: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
                             </div>
-                            <div className="md:col-span-4">
-                                <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha entrega</label>
-                                <input type="date" value={nuevoItem.fecha_entrega} onChange={(e) => setNuevoItem({ ...nuevoItem, fecha_entrega: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
-                            </div>
-                            <div className="md:col-span-4">
-                                <label className="block text-xs font-semibold text-gray-600 mb-1">Estado</label>
-                                <select
-                                    value={nuevoItem.estado}
-                                    onChange={(e) => setNuevoItem({ ...nuevoItem, estado: e.target.value })}
-                                    className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca"
-                                >
-                                    {ESTADOS_DETALLE_ACTIVOS.map((estado) => (
-                                        <option key={estado} value={estado}>{estado}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="md:col-span-4 flex gap-3">
+                            {esVenta ? (
+                                <div className="md:col-span-4">
+                                    <label className="block text-xs font-semibold text-gray-600 mb-1">Estado</label>
+                                    <select
+                                        value={nuevoItem.estado || 'Entregado'}
+                                        onChange={(e) => setNuevoItem({ ...nuevoItem, estado: e.target.value })}
+                                        className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca"
+                                    >
+                                        {ESTADOS_VENTA_AL_CREAR.map((estado) => (
+                                            <option key={estado} value={estado}>{estado}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            ) : (
+                                <div className="md:col-span-4">
+                                    <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha entrega</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="date"
+                                            value={nuevoItem.fecha_entrega}
+                                            onChange={(e) => setNuevoItem({ ...nuevoItem, fecha_entrega: e.target.value })}
+                                            className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setNuevoItem({ ...nuevoItem, fecha_entrega: hoyIso })}
+                                            className="shrink-0 px-3 py-2.5 rounded-lg border border-negro/10 text-sm font-semibold text-negro hover:bg-white transition"
+                                        >
+                                            Hoy
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`${esVenta ? 'md:col-span-8' : 'md:col-span-8'} flex gap-3`}>
                                 <div className="flex-1">
                                     <input type="file" id="upload-image" accept="image/*" className="hidden" onChange={handleSubirImagen} />
                                     <label htmlFor="upload-image" className={`cursor-pointer w-full justify-center inline-flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm font-medium transition ${nuevoItem.imagen_referencia_url ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
@@ -337,8 +394,7 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
                                         <tr>
                                             <th className="p-3">Foto</th>
                                             <th className="p-3">Producto / servicio</th>
-                                            <th className="p-3">Entrega</th>
-                                            <th className="p-3">Estado</th>
+                                            <th className="p-3">Entrega / estado</th>
                                             <th className="p-3 text-center">Cant.</th>
                                             <th className="p-3 text-right">Subtotal</th>
                                             <th className="p-3" />
@@ -356,8 +412,11 @@ export default function ModalNuevaOrden({ isOpen, onClose, onSuccess }) {
                                                     <span className="font-medium text-negro block">{item.descripcion}</span>
                                                     <span className="text-xs text-gray-500">{item.tipo_item}</span>
                                                 </td>
-                                                <td className="p-3 text-[13px]">{item.fecha_entrega || '—'}</td>
-                                                <td className="p-3 text-[13px]">{item.estado}</td>
+                                                <td className="p-3 text-[13px]">
+                                                    {esTipoVenta(item.tipo_item)
+                                                        ? (item.estado || 'Entregado')
+                                                        : (item.fecha_entrega || '—')}
+                                                </td>
                                                 <td className="p-3 text-center">{item.cantidad}</td>
                                                 <td className="p-3 text-right font-medium">${(item.cantidad * item.precio_unitario).toFixed(2)}</td>
                                                 <td className="p-3 text-right">

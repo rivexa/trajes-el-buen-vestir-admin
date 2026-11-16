@@ -18,6 +18,9 @@ export const ESTADOS_DETALLE_ORDEN = [
 /** Estados productivos (sin Anulada) para selects de avance. */
 export const ESTADOS_DETALLE_ACTIVOS = ESTADOS_DETALLE_ORDEN.filter((e) => e !== 'Anulada');
 
+/** Al crear una Venta (entrega inmediata) solo tiene sentido Pendiente o Entregado. */
+export const ESTADOS_VENTA_AL_CREAR = ['Pendiente', 'Entregado'];
+
 const ALIAS_TIPO = {
     otro: 'Venta',
     otros: 'Venta',
@@ -33,6 +36,10 @@ export function normalizarTipoItem(valor) {
     const recortado = String(valor || '').trim();
     if (TIPOS_ITEM_ORDEN.includes(recortado)) return recortado;
     return ALIAS_TIPO[recortado.toLowerCase()] || 'Venta';
+}
+
+export function esTipoVenta(tipo) {
+    return normalizarTipoItem(tipo) === 'Venta';
 }
 
 export function ordenAnulada(orden) {

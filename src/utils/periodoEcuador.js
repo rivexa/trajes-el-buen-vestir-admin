@@ -1,5 +1,9 @@
 const ZONA = 'America/Guayaquil';
 
+export function hoyIsoEcuador(fecha = new Date()) {
+    return partesHoy(fecha).iso;
+}
+
 function partesHoy(fecha = new Date()) {
     const partes = new Intl.DateTimeFormat('en-CA', {
         timeZone: ZONA,
