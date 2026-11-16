@@ -3,11 +3,13 @@ import { X, Plus, Trash2, UserCheck, PackageOpen, DollarSign, Image as ImageIcon
 import { fetchApi } from '../../lib/apiBase';
 import { SkeletonBloqueModal } from './Skeleton';
 import {
-    ESTADOS_DETALLE_ACTIVOS,
+    ESTADOS_VENTA_AL_CREAR,
     ITEM_LINEA_VACIO,
     TIPOS_ITEM_ORDEN,
+    esTipoVenta,
     normalizarTipoItem,
 } from '../../utils/ordenDominio';
+import { hoyIsoEcuador } from '../../utils/periodoEcuador';
 
 const API_ORDENES = `${import.meta.env.VITE_API_URL}/ordenes`;
 
@@ -102,11 +104,32 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
         }
     };
 
+    const esVenta = esTipoVenta(nuevoItem.tipo_item);
+    const hoyIso = hoyIsoEcuador();
+
+    const cambiarTipo = (tipo) => {
+        if (esTipoVenta(tipo)) {
+            setNuevoItem((prev) => ({
+                ...prev,
+                tipo_item: tipo,
+                fecha_entrega: '',
+                estado: 'Entregado',
+            }));
+            return;
+        }
+        setNuevoItem((prev) => ({
+            ...prev,
+            tipo_item: tipo,
+            estado: 'Pendiente',
+            fecha_entrega: prev.fecha_entrega || fechaDefault,
+        }));
+    };
+
     const agregarDetalle = () => {
         if (!nuevoItem.descripcion.trim() || Number(nuevoItem.precio_unitario) <= 0 || nuevoItem.cantidad <= 0) {
             return setErrorOrden('Descripción, cantidad y precio son obligatorios.');
         }
-        if (!nuevoItem.fecha_entrega && !fechaDefault) {
+        if (!esVenta && !nuevoItem.fecha_entrega && !fechaDefault) {
             return setErrorOrden('Indica fecha de entrega en la línea o una fecha por defecto.');
         }
         setDetalles([
@@ -114,8 +137,8 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
             {
                 ...nuevoItem,
                 precio_unitario: parseFloat(nuevoItem.precio_unitario),
-                fecha_entrega: nuevoItem.fecha_entrega || fechaDefault,
-                estado: nuevoItem.estado || 'Pendiente',
+                fecha_entrega: esVenta ? hoyIso : (nuevoItem.fecha_entrega || fechaDefault),
+                estado: esVenta ? (nuevoItem.estado || 'Entregado') : 'Pendiente',
             },
         ]);
         setNuevoItem({ ...ITEM_LINEA_VACIO(), fecha_entrega: fechaDefault });
@@ -126,8 +149,12 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
 
     const aplicarFechaATodas = () => {
         if (!fechaDefault) return setErrorOrden('Elige primero la fecha por defecto.');
-        setDetalles((prev) => prev.map((item) => ({ ...item, fecha_entrega: fechaDefault })));
-        setNuevoItem((prev) => ({ ...prev, fecha_entrega: fechaDefault }));
+        setDetalles((prev) => prev.map((item) => (
+            esTipoVenta(item.tipo_item) ? item : { ...item, fecha_entrega: fechaDefault }
+        )));
+        setNuevoItem((prev) => (
+            esTipoVenta(prev.tipo_item) ? prev : { ...prev, fecha_entrega: fechaDefault }
+        ));
         setErrorOrden('');
     };
 
@@ -145,15 +172,20 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                 cliente_id: cliente.id,
                 fecha_entrega_default: fechaDefault || undefined,
                 abono: parseFloat(abono) || 0,
-                detalles: detalles.map((d) => ({
-                    tipo_item: d.tipo_item,
-                    descripcion: d.descripcion,
-                    cantidad: d.cantidad,
-                    precio_unitario: d.precio_unitario,
-                    estado: d.estado || 'Pendiente',
-                    fecha_entrega: d.fecha_entrega || undefined,
-                    imagen_referencia_url: d.imagen_referencia_url || undefined,
-                })),
+                detalles: detalles.map((d) => {
+                    const venta = esTipoVenta(d.tipo_item);
+                    return {
+                        tipo_item: d.tipo_item,
+                        descripcion: d.descripcion,
+                        cantidad: d.cantidad,
+                        precio_unitario: d.precio_unitario,
+                        estado: d.estado || (venta ? 'Entregado' : 'Pendiente'),
+                        fecha_entrega: venta
+                            ? (d.fecha_entrega || hoyIso)
+                            : (d.fecha_entrega || undefined),
+                        imagen_referencia_url: d.imagen_referencia_url || undefined,
+                    };
+                }),
             };
 
             const response = await fetchApi(`${API_ORDENES}/${ordenId}/editar`, {
@@ -209,7 +241,12 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                                 <div className="mb-4 flex flex-col sm:flex-row gap-3 sm:items-end">
                                     <div className="flex-1">
                                         <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha por defecto</label>
-                                        <input type="date" value={fechaDefault} onChange={(e) => setFechaDefault(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-rojoMarca text-sm" />
+                                        <div className="flex gap-2">
+                                            <input type="date" value={fechaDefault} onChange={(e) => setFechaDefault(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-rojoMarca text-sm" />
+                                            <button type="button" onClick={() => setFechaDefault(hoyIso)} className="shrink-0 px-3 py-2.5 rounded-lg border border-negro/10 text-sm font-semibold text-negro hover:bg-plomoSuave transition">
+                                                Hoy
+                                            </button>
+                                        </div>
                                     </div>
                                     <button type="button" onClick={aplicarFechaATodas} className="px-4 py-2.5 rounded-lg border border-negro/10 text-sm font-semibold text-negro hover:bg-plomoSuave transition">
                                         Aplicar a todas
@@ -219,7 +256,7 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                                     <div className="md:col-span-3">
                                         <label className="block text-xs font-semibold text-gray-600 mb-1">Tipo</label>
-                                        <select value={nuevoItem.tipo_item} onChange={(e) => setNuevoItem({ ...nuevoItem, tipo_item: e.target.value })} className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca">
+                                        <select value={nuevoItem.tipo_item} onChange={(e) => cambiarTipo(e.target.value)} className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca">
                                             {TIPOS_ITEM_ORDEN.map((tipo) => (
                                                 <option key={tipo} value={tipo}>{tipo}</option>
                                             ))}
@@ -237,19 +274,31 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                                         <label className="block text-xs font-semibold text-gray-600 mb-1">Precio Un. ($)</label>
                                         <input type="number" step="0.01" value={nuevoItem.precio_unitario} onChange={(e) => setNuevoItem({ ...nuevoItem, precio_unitario: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
                                     </div>
-                                    <div className="md:col-span-4">
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha entrega</label>
-                                        <input type="date" value={nuevoItem.fecha_entrega} onChange={(e) => setNuevoItem({ ...nuevoItem, fecha_entrega: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
-                                    </div>
-                                    <div className="md:col-span-4">
-                                        <label className="block text-xs font-semibold text-gray-600 mb-1">Estado</label>
-                                        <select value={nuevoItem.estado} onChange={(e) => setNuevoItem({ ...nuevoItem, estado: e.target.value })} className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca">
-                                            {ESTADOS_DETALLE_ACTIVOS.map((estado) => (
-                                                <option key={estado} value={estado}>{estado}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="md:col-span-4 flex gap-3">
+                                    {esVenta ? (
+                                        <div className="md:col-span-4">
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">Estado</label>
+                                            <select
+                                                value={nuevoItem.estado || 'Entregado'}
+                                                onChange={(e) => setNuevoItem({ ...nuevoItem, estado: e.target.value })}
+                                                className="select-marca w-full bg-white border-gray-300 focus:border-rojoMarca"
+                                            >
+                                                {ESTADOS_VENTA_AL_CREAR.map((estado) => (
+                                                    <option key={estado} value={estado}>{estado}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    ) : (
+                                        <div className="md:col-span-4">
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">Fecha entrega</label>
+                                            <div className="flex gap-2">
+                                                <input type="date" value={nuevoItem.fecha_entrega} onChange={(e) => setNuevoItem({ ...nuevoItem, fecha_entrega: e.target.value })} className="w-full p-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-rojoMarca text-sm" />
+                                                <button type="button" onClick={() => setNuevoItem({ ...nuevoItem, fecha_entrega: hoyIso })} className="shrink-0 px-3 py-2.5 rounded-lg border border-negro/10 text-sm font-semibold text-negro hover:bg-white transition">
+                                                    Hoy
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="md:col-span-8 flex gap-3">
                                         <div className="flex-1">
                                             <input type="file" id="edit-upload-image" accept="image/*" className="hidden" onChange={handleSubirImagen} />
                                             <label htmlFor="edit-upload-image" className={`cursor-pointer w-full justify-center inline-flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm font-medium transition ${nuevoItem.imagen_referencia_url ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
@@ -293,7 +342,9 @@ export default function ModalEditarOrden({ isOpen, onClose, onSuccess, ordenId }
                                                             <span className="font-medium text-negro block">{item.descripcion}</span>
                                                             <span className="text-xs text-gray-500">{item.tipo_item}</span>
                                                         </td>
-                                                        <td className="p-3 text-[13px]">{item.fecha_entrega || '—'}</td>
+                                                        <td className="p-3 text-[13px]">
+                                                            {esTipoVenta(item.tipo_item) ? 'Al momento' : (item.fecha_entrega || '—')}
+                                                        </td>
                                                         <td className="p-3 text-[13px]">{item.estado}</td>
                                                         <td className="p-3 text-center">{item.cantidad}</td>
                                                         <td className="p-3 text-right font-medium">${(item.cantidad * item.precio_unitario).toFixed(2)}</td>
